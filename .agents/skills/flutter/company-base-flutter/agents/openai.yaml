@@ -1,0 +1,4 @@
+interface:
+  display_name: "Company Base Flutter"
+  short_description: "Build Flutter features on the company base"
+  default_prompt: "Use $company-base-flutter to implement this feature following the company Flutter base conventions."

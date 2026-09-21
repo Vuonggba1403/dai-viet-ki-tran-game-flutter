@@ -1,0 +1,6 @@
+package com.mywo
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
