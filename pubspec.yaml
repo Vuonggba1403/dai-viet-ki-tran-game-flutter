@@ -61,6 +61,24 @@ flutter:
     - assets/images/heroes/spear_guard/
     - assets/images/heroes/strategist/
     - assets/images/heroes/swordsman/
+    - assets/images/game/backgrounds/battle/
+    - assets/images/game/enemies/bandit/
+    - assets/images/game/enemies/goblin_bomber/
+    - assets/images/game/enemies/necromancer/
+    - assets/images/game/enemies/skeleton_archer/
+    - assets/images/game/items/consumables/
+    - assets/images/game/items/currency/
+    - assets/images/game/items/equipment/
+    - assets/images/game/items/materials/
+    - assets/images/game/rewards/
+    - assets/images/game/tiles/base/
+    - assets/images/game/tiles/overlays/
+    - assets/images/game/tiles/special/
+    - assets/images/game/ui/battle/
+    - assets/images/game/vfx/combat/
+    - assets/images/game/vfx/elemental/
+    - assets/images/game/vfx/projectiles/
+    - assets/images/game/vfx/status/
     - assets/game_data/
 
 #  fonts:
