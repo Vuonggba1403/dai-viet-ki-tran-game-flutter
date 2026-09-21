@@ -130,9 +130,9 @@ class BoardGenerator {
       }
     }
 
-    // Fallback: generate a fresh board preserving total tile count
-    return generate(random,
-        startTileId:
-            existingTiles.map((t) => t.id).reduce((a, b) => a > b ? a : b) + 1);
+    throw StateError(
+      'Failed to shuffle the existing tile distribution into a valid board '
+      'after $maxGenerationAttempts attempts.',
+    );
   }
 }

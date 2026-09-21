@@ -6,12 +6,12 @@ import 'package:meta/meta.dart';
 /// Represents a validated group of matched tiles of identical [TileType].
 @immutable
 class MatchGroup {
-  const MatchGroup({
+  MatchGroup({
     required this.tileType,
-    required this.positions,
+    required Set<BoardPosition> positions,
     this.specialCreated = SpecialTileType.none,
     this.specialSpawnPosition,
-  });
+  }) : positions = Set<BoardPosition>.unmodifiable(positions);
 
   final TileType tileType;
   final Set<BoardPosition> positions;
@@ -38,7 +38,7 @@ class MatchGroup {
   @override
   int get hashCode => Object.hash(
         tileType,
-        Object.hashAll(positions),
+        Object.hashAllUnordered(positions),
         specialCreated,
         specialSpawnPosition,
       );

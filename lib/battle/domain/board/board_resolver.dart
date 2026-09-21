@@ -12,16 +12,25 @@ import 'package:ezwork/battle/domain/board/tile_type.dart';
 import 'package:ezwork/battle/domain/random/random_service.dart';
 import 'package:meta/meta.dart';
 
+class _PowerGemResolution {
+  const _PowerGemResolution({required this.clears, required this.event});
+
+  final Set<BoardPosition> clears;
+  final SpecialTriggered event;
+}
+
 /// The complete output of a board resolution step.
 @immutable
 class BoardResolution {
-  const BoardResolution({
+  BoardResolution({
     required this.finalBoard,
-    required this.events,
+    required List<BoardEvent> events,
     required this.comboCount,
-    required this.matchedTilesSummary,
+    required Map<TileType, int> matchedTilesSummary,
     required this.isSuccess,
-  });
+  })  : events = List<BoardEvent>.unmodifiable(events),
+        matchedTilesSummary =
+            Map<TileType, int>.unmodifiable(matchedTilesSummary);
 
   final Board finalBoard;
   final List<BoardEvent> events;
@@ -85,8 +94,6 @@ class BoardResolver {
     // Check for special tile interactions before regular match finding
     final isPowerGemSwap = tileFrom.specialType == SpecialTileType.powerGem ||
         tileTo.specialType == SpecialTileType.powerGem;
-    final isSpecialPairSwap = tileFrom.isSpecial && tileTo.isSpecial;
-
     // Simulate swap
     var currentBoard = board.swapTiles(swap.from, swap.to);
     final initialMatches = MatchFinder.find(
@@ -94,8 +101,12 @@ class BoardResolver {
       preferredSpawnPosition: swap.to,
     );
 
-    final isValidMove =
-        initialMatches.isNotEmpty || isPowerGemSwap || isSpecialPairSwap;
+    final createsMatchAtSwap = initialMatches.any(
+      (match) =>
+          match.positions.contains(swap.from) ||
+          match.positions.contains(swap.to),
+    );
+    final isValidMove = createsMatchAtSwap || isPowerGemSwap;
 
     if (!isValidMove) {
       events
@@ -117,26 +128,33 @@ class BoardResolver {
 
     var cycle = 1;
     var comboCount = 0;
-    var idCounter = nextTileId;
+    final maxExistingTileId = board
+        .toMap()
+        .values
+        .map((tile) => tile.id)
+        .reduce((a, b) => a > b ? a : b);
+    var idCounter =
+        nextTileId > maxExistingTileId ? nextTileId : maxExistingTileId + 1;
 
-    // Handle direct Power Gem or Special Pair swap on cycle 1
+    // Handle a direct Power Gem swap on cycle 1.
     Set<BoardPosition>? forcedInitialClears;
+    SpecialTriggered? forcedSpecialEvent;
+    final initiallyTriggeredSpecials = <BoardPosition>{};
     if (isPowerGemSwap) {
-      forcedInitialClears = _resolvePowerGemSwap(
+      final powerGemResolution = _resolvePowerGemSwap(
         currentBoard,
         swap,
         tileFrom,
         tileTo,
-        events,
       );
-    } else if (isSpecialPairSwap && initialMatches.isEmpty) {
-      forcedInitialClears = _resolveSpecialPairSwap(
-        currentBoard,
-        swap,
-        tileFrom,
-        tileTo,
-        events,
-      );
+      forcedInitialClears = powerGemResolution.clears;
+      forcedSpecialEvent = powerGemResolution.event;
+      if (tileFrom.specialType == SpecialTileType.powerGem) {
+        initiallyTriggeredSpecials.add(swap.to);
+      }
+      if (tileTo.specialType == SpecialTileType.powerGem) {
+        initiallyTriggeredSpecials.add(swap.from);
+      }
     }
 
     while (cycle <= maxCascadeCycles) {
@@ -156,6 +174,9 @@ class BoardResolver {
       }
 
       events.add(CascadeStarted(cycle));
+      if (cycle == 1 && forcedSpecialEvent != null) {
+        events.add(forcedSpecialEvent);
+      }
       comboCount++;
 
       final positionsToClear = <BoardPosition>{};
@@ -204,6 +225,7 @@ class BoardResolver {
         currentBoard,
         positionsToClear,
         events,
+        initiallyTriggeredPositions: initiallyTriggeredSpecials,
       );
 
       // Record tile clear event
@@ -270,6 +292,12 @@ class BoardResolver {
       cycle++;
     }
 
+    if (cycle > maxCascadeCycles && MatchFinder.hasAnyMatch(currentBoard)) {
+      throw StateError(
+        'Board did not settle after $maxCascadeCycles cascade cycles.',
+      );
+    }
+
     // If no legal moves remain on board after cascade settles, shuffle
     if (!LegalMoveFinder.hasLegalMove(currentBoard)) {
       final shuffledBoard = BoardGenerator.shuffle(currentBoard, random);
@@ -295,13 +323,13 @@ class BoardResolver {
 
   /// Triggers special tile abilities and cascades chain reactions.
   static Set<BoardPosition> _expandSpecialTriggers(
-    Board board,
-    Set<BoardPosition> initialClears,
-    List<BoardEvent> events,
-  ) {
+      Board board, Set<BoardPosition> initialClears, List<BoardEvent> events,
+      {Set<BoardPosition> initiallyTriggeredPositions = const {}}) {
     final allCleared = Set<BoardPosition>.from(initialClears);
     final queue = List<BoardPosition>.from(initialClears);
-    final triggeredSpecialPositions = <BoardPosition>{};
+    final triggeredSpecialPositions = <BoardPosition>{
+      ...initiallyTriggeredPositions,
+    };
 
     while (queue.isNotEmpty) {
       final pos = queue.removeAt(0);
@@ -362,34 +390,28 @@ class BoardResolver {
     return allCleared;
   }
 
-  static Set<BoardPosition> _resolvePowerGemSwap(
+  static _PowerGemResolution _resolvePowerGemSwap(
     Board board,
     Swap swap,
     Tile tileFrom,
     Tile tileTo,
-    List<BoardEvent> events,
   ) {
     final clears = <BoardPosition>{};
     final isFromPowerGem = tileFrom.specialType == SpecialTileType.powerGem;
     final isToPowerGem = tileTo.specialType == SpecialTileType.powerGem;
+    late final BoardPosition powerGemPosition;
 
     if (isFromPowerGem && isToPowerGem) {
+      powerGemPosition = swap.to;
       // Both are Power Gems -> Clear entire board!
       for (var r = 0; r < Board.rowCount; r++) {
         for (var c = 0; c < Board.columnCount; c++) {
           clears.add(BoardPosition(r, c));
         }
       }
-      events.add(
-        SpecialTriggered(
-          position: swap.to,
-          specialType: SpecialTileType.powerGem,
-          affectedPositions: clears.toList()..sort(),
-        ),
-      );
     } else {
       // One Power Gem swapped with normal/special tile
-      final powerGemPos = isFromPowerGem ? swap.from : swap.to;
+      powerGemPosition = isFromPowerGem ? swap.to : swap.from;
       final otherTile = isFromPowerGem ? tileTo : tileFrom;
       final targetType = otherTile.type;
 
@@ -406,79 +428,15 @@ class BoardResolver {
           }
         }
       }
-
-      events.add(
-        SpecialTriggered(
-          position: powerGemPos,
-          specialType: SpecialTileType.powerGem,
-          affectedPositions: clears.toList()..sort(),
-        ),
-      );
     }
 
-    return clears;
-  }
-
-  static Set<BoardPosition> _resolveSpecialPairSwap(
-    Board board,
-    Swap swap,
-    Tile tileFrom,
-    Tile tileTo,
-    List<BoardEvent> events,
-  ) {
-    final clears = <BoardPosition>{swap.from, swap.to};
-
-    // Line + Line: Clears full row and full column (cross)
-    final isFromLine = tileFrom.specialType == SpecialTileType.lineHorizontal ||
-        tileFrom.specialType == SpecialTileType.lineVertical;
-    final isToLine = tileTo.specialType == SpecialTileType.lineHorizontal ||
-        tileTo.specialType == SpecialTileType.lineVertical;
-
-    if (isFromLine && isToLine) {
-      for (var c = 0; c < Board.columnCount; c++) {
-        clears.add(BoardPosition(swap.to.row, c));
-      }
-      for (var r = 0; r < Board.rowCount; r++) {
-        clears.add(BoardPosition(r, swap.to.column));
-      }
-    } else if ((isFromLine && tileTo.specialType == SpecialTileType.bomb) ||
-        (isToLine && tileFrom.specialType == SpecialTileType.bomb)) {
-      // Line + Bomb: Clears 3 rows and 3 columns!
-      for (var r = swap.to.row - 1; r <= swap.to.row + 1; r++) {
-        if (r >= 0 && r < Board.rowCount) {
-          for (var c = 0; c < Board.columnCount; c++) {
-            clears.add(BoardPosition(r, c));
-          }
-        }
-      }
-      for (var c = swap.to.column - 1; c <= swap.to.column + 1; c++) {
-        if (c >= 0 && c < Board.columnCount) {
-          for (var r = 0; r < Board.rowCount; r++) {
-            clears.add(BoardPosition(r, c));
-          }
-        }
-      }
-    } else if (tileFrom.specialType == SpecialTileType.bomb &&
-        tileTo.specialType == SpecialTileType.bomb) {
-      // Bomb + Bomb: Clears large 5x5 area
-      for (var r = swap.to.row - 2; r <= swap.to.row + 2; r++) {
-        for (var c = swap.to.column - 2; c <= swap.to.column + 2; c++) {
-          final p = BoardPosition(r, c);
-          if (p.isValid()) {
-            clears.add(p);
-          }
-        }
-      }
-    }
-
-    events.add(
-      SpecialTriggered(
-        position: swap.to,
-        specialType: tileTo.specialType,
+    return _PowerGemResolution(
+      clears: clears,
+      event: SpecialTriggered(
+        position: powerGemPosition,
+        specialType: SpecialTileType.powerGem,
         affectedPositions: clears.toList()..sort(),
       ),
     );
-
-    return clears;
   }
 }

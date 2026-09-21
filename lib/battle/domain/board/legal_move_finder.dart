@@ -84,13 +84,12 @@ class LegalMoveFinder {
       return true;
     }
 
-    // Two special tiles swapped together is always legal
-    if (tileA.isSpecial && tileB.isSpecial) {
-      return true;
-    }
-
-    // Perform virtual swap and check for matches
+    // A regular swap is legal only when one of the moved tiles participates
+    // in the resulting match. An unrelated prematch elsewhere must not make
+    // this move consume a turn.
     final swapped = board.swapTiles(a, b);
-    return MatchFinder.hasAnyMatch(swapped);
+    return MatchFinder.find(swapped).any(
+      (match) => match.positions.contains(a) || match.positions.contains(b),
+    );
   }
 }
