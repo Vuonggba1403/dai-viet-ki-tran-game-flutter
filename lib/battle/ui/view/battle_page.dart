@@ -6,6 +6,7 @@ import 'package:ezwork/battle/ui/cubit/battle_session_effect.dart';
 import 'package:ezwork/battle/ui/cubit/battle_session_state.dart';
 import 'package:ezwork/battle/ui/game/match3_battle_game.dart';
 import 'package:ezwork/battle/ui/overlays/battle_hud.dart';
+import 'package:ezwork/battle/ui/overlays/hero_team_row.dart';
 import 'package:ezwork/battle/ui/overlays/pause_overlay.dart';
 import 'package:ezwork/home/ui/view/home_page.dart';
 import 'package:flame/game.dart';
@@ -216,7 +217,7 @@ class _BattlePageViewState extends State<_BattlePageView> {
             ),
           ),
 
-        // 2. Top HUD with selected combo rendering
+        // 2. Top HUD with stage info, enemy combat card, combo, and pause button
         Positioned(
           top: 0,
           left: 0,
@@ -227,12 +228,28 @@ class _BattlePageViewState extends State<_BattlePageView> {
               return BattleHud(
                 stageTitle: state.currentStage.displayNameKey,
                 comboCount: combo,
+                enemy: state.sessionController.currentEnemy,
+                remainingTurns: state.sessionController.remainingTurns,
+                currentWave: state.sessionController.currentWaveNumber,
+                totalWaves: state.sessionController.totalWaves,
                 onPause: () {
                   _game?.pauseBattle();
                   cubit.pause();
                 },
               );
             },
+          ),
+        ),
+
+        // 3. Bottom Hero Team Row (4 heroes HP, Mana, and skill buttons)
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: HeroTeamRow(
+            heroes: state.sessionController.heroes,
+            canCastSkill: state.sessionController.canCastSkill,
+            onCastSkill: cubit.castSkill,
           ),
         ),
 

@@ -1,7 +1,9 @@
 import 'package:bloc_effects/bloc_effects.dart';
+import 'package:ezwork/battle/data/models/stage_definition.dart';
 import 'package:ezwork/battle/data/repositories/battle_content_repository.dart';
 import 'package:ezwork/battle/domain/battle_session_controller.dart';
 import 'package:ezwork/battle/domain/board/board_generator.dart';
+import 'package:ezwork/battle/domain/combat/battle_phase.dart';
 import 'package:ezwork/battle/domain/random/seeded_random.dart';
 import 'package:ezwork/battle/ui/cubit/battle_session_effect.dart';
 import 'package:ezwork/battle/ui/cubit/battle_session_state.dart';
@@ -44,9 +46,17 @@ class BattleSessionCubit
       final stage = matchingStages.first;
       final rng = SeededRandom(_seed);
       final initialBoard = BoardGenerator.generate(rng);
-      final controller = BattleSessionController(
+      late final BattleSessionController controller;
+      controller = BattleSessionController(
         initialBoard: initialBoard,
         randomService: rng,
+        stage: stage,
+        heroDefinitions: content.heroes,
+        enemyDefinitions: content.enemies,
+        skillDefinitions: content.skills,
+        onStateChanged: () {
+          _handleCombatStateChange(controller, stage);
+        },
       );
 
       emit(
@@ -105,5 +115,44 @@ class BattleSessionCubit
       _ => _currentStageId,
     };
     await loadStage(stageId: stageIdToRetry);
+  }
+
+  /// Casts the active skill of the hero with [heroId].
+  void castSkill(String heroId) {
+    final s = state;
+    if (s is BattleSessionStateReady) {
+      s.sessionController.castSkill(heroId);
+    }
+  }
+
+  void _handleCombatStateChange(
+    BattleSessionController controller,
+    StageDefinition stage,
+  ) {
+    if (isClosed) return;
+    switch (controller.currentPhase) {
+      case BattlePhase.victory:
+        emit(
+          BattleSessionState.victory(
+            stage: stage,
+            score: controller.totalScore,
+          ),
+        );
+      case BattlePhase.defeat:
+        emit(
+          BattleSessionState.defeat(
+            stage: stage,
+          ),
+        );
+      case BattlePhase.playerInput:
+      case BattlePhase.applyingCombat:
+      case BattlePhase.enemyTurn:
+      case BattlePhase.resolvingBoard:
+      case BattlePhase.setup:
+        final s = state;
+        if (s is BattleSessionStateReady) {
+          emit(s.copyWith(comboCount: controller.comboCount));
+        }
+    }
   }
 }

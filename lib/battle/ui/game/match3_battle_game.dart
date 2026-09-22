@@ -2,6 +2,7 @@ import 'package:ezwork/assets_gen/assets.gen.dart';
 import 'package:ezwork/battle/domain/battle_session_controller.dart';
 import 'package:ezwork/battle/domain/board/swap.dart';
 import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:ezwork/battle/domain/combat/battle_phase.dart';
 import 'package:ezwork/battle/ui/game/animation/battle_animation_queue.dart';
 import 'package:ezwork/battle/ui/game/battle_game_config.dart';
 import 'package:ezwork/battle/ui/game/components/board_component.dart';
@@ -44,9 +45,11 @@ class Match3BattleGame extends FlameGame {
   bool _isInputLocked = false;
   bool _hasPendingResize = false;
 
-  /// Whether user swipe input is currently locked.
+  /// Whether user input is currently locked (due to pause, animations, or combat turn).
   bool get isInputLocked =>
-      _isInputLocked || (_animationQueue?.isBusy ?? false);
+      _isInputLocked ||
+      (_animationQueue?.isBusy ?? false) ||
+      sessionController.currentPhase != BattlePhase.playerInput;
   set isInputLocked(bool value) {
     _isInputLocked = value;
     _gestureController?.isLocked = isInputLocked;
