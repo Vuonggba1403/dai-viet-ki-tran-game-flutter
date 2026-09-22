@@ -1,4 +1,10 @@
-export 'colors.dart';
-export 'spacing.dart';
+export 'colors.dart' hide GameColors;
+export 'game_breakpoints.dart';
+export 'game_colors.dart';
+export 'game_radius.dart';
+export 'game_shadows.dart';
+export 'game_spacing.dart';
+export 'game_typography.dart';
+export 'spacing.dart' hide GameSpacing;
 export 'themes.dart';
 export 'typography.dart';

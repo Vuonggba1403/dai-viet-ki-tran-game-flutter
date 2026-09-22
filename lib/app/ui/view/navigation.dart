@@ -1,4 +1,5 @@
 import 'package:dai_viet_ki_tran_game/battle/battle.dart';
+import 'package:dai_viet_ki_tran_game/heroes/heroes.dart';
 import 'package:dai_viet_ki_tran_game/home/home.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,6 +9,11 @@ final router = GoRouter(
     GoRoute(
       name: HomePage.routeName,
       path: '/${HomePage.routeName}',
+      builder: (context, routerState) => const HomePage(),
+    ),
+    GoRoute(
+      name: HeroesPage.routeName,
+      path: '/${HeroesPage.routeName}',
       builder: (context, routerState) => const HomePage(),
     ),
     GoRoute(
