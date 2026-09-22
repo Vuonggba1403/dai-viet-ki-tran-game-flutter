@@ -48,8 +48,10 @@ void main() {
       expect(boardPos, equals(const BoardPosition(0, 0)));
 
       final center34 = component.positionFor(const BoardPosition(3, 4));
-      expect(component.boardPositionFor(center34),
-          equals(const BoardPosition(3, 4)));
+      expect(
+        component.boardPositionFor(center34),
+        equals(const BoardPosition(3, 4)),
+      );
     });
 
     test('boardPositionFor returns null for out of bounds coordinates', () {
@@ -88,5 +90,120 @@ void main() {
       component.removeTile(999);
       expect(component.getTile(999), isNull);
     });
+
+    test(
+      'relayoutTiles updates position and size of all existing components',
+      () {
+        final domainBoard = BoardGenerator.generate(SeededRandom(123));
+        component.initTiles(domainBoard);
+
+        final initialTile = component.tilesById.values.first;
+        final initialSize = initialTile.size.x;
+        final initialPos = initialTile.position.clone();
+
+        // Resize board to different aspect ratio
+        component
+          ..size = Vector2(500, 700)
+          ..relayoutTiles(domainBoard);
+
+        // Tile size and position must adapt to new board dimensions
+        expect(initialTile.size.x, isNot(equals(initialSize)));
+        expect(initialTile.position, isNot(equals(initialPos)));
+
+        // Every tile must match its newly computed position
+        for (var r = 0; r < 7; r++) {
+          for (var c = 0; c < 7; c++) {
+            final pos = BoardPosition(r, c);
+            final tile = domainBoard.getTileAt(r, c)!;
+            final comp = component.getTile(tile.id)!;
+            final expectedPos = component.positionFor(pos);
+            expect(comp.position.x, closeTo(expectedPos.x, 0.001));
+            expect(comp.position.y, closeTo(expectedPos.y, 0.001));
+            expect(comp.size.x, closeTo(component.tileSize, 0.001));
+            expect(comp.size.y, closeTo(component.tileSize, 0.001));
+          }
+        }
+      },
+    );
+
+    test(
+      'maintains layout invariants across various iOS and Android screen resolutions',
+      () {
+        final domainBoard = BoardGenerator.generate(SeededRandom(999));
+        final screenSizes = <String, Vector2>{
+          'iPhone SE 1st gen (compact)': Vector2(320, 568),
+          'iPhone SE 3rd gen (4.7")': Vector2(375, 667),
+          'iPhone 13 / 14 / 15 (6.1")': Vector2(390, 844),
+          'iPhone 15 Pro / 16 Pro': Vector2(393, 852),
+          'iPhone 14 / 15 Plus (6.7")': Vector2(428, 926),
+          'iPhone 15 / 16 Pro Max': Vector2(430, 932),
+          'Android Budget (HD+)': Vector2(360, 640),
+          'Android Galaxy S21/S22/S23': Vector2(360, 780),
+          'Android Pixel 6/7/8': Vector2(412, 915),
+          'Android Galaxy S24 Ultra': Vector2(412, 892),
+          'Android Ultra-tall (21:9)': Vector2(384, 854),
+          'Foldable (Galaxy Z Fold unfolded)': Vector2(673, 841),
+          'Tablet iPad Mini': Vector2(744, 1133),
+          'Tablet iPad 10.9"': Vector2(820, 1180),
+          'Tablet iPad Pro 12.9"': Vector2(1024, 1366),
+          'Landscape iPhone 14': Vector2(844, 390),
+          'Landscape Android S24': Vector2(892, 412),
+          'Landscape iPad': Vector2(1180, 820),
+        };
+
+        for (final entry in screenSizes.entries) {
+          final label = entry.key;
+          final size = entry.value;
+
+          component
+            ..size = size
+            ..onGameResize(size)
+            ..relayoutTiles(domainBoard);
+
+          expect(
+            component.tileSize,
+            greaterThan(20.0),
+            reason: 'Tile size too small on $label',
+          );
+
+          // All 49 board positions must stay strictly within bounds
+          for (var r = 0; r < 7; r++) {
+            for (var c = 0; c < 7; c++) {
+              final pos = BoardPosition(r, c);
+              final center = component.positionFor(pos);
+
+              expect(
+                center.x,
+                greaterThan(0),
+                reason: 'Tile ($r, $c) out of left bound on $label',
+              );
+              expect(
+                center.x,
+                lessThan(size.x),
+                reason: 'Tile ($r, $c) out of right bound on $label',
+              );
+              expect(
+                center.y,
+                greaterThan(0),
+                reason: 'Tile ($r, $c) out of top bound on $label',
+              );
+              expect(
+                center.y,
+                lessThan(size.y),
+                reason: 'Tile ($r, $c) out of bottom bound on $label',
+              );
+
+              // 2-way coordinate mapping must be exact
+              final mappedBack = component.boardPositionFor(center);
+              expect(
+                mappedBack,
+                equals(pos),
+                reason: 'Coordinate round-trip failed at ($r, $c) on $label',
+              );
+            }
+          }
+        }
+      },
+    );
   });
 }

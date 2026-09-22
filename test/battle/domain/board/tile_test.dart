@@ -48,30 +48,39 @@ void main() {
   group('TileType', () {
     test('5 standard types are present', () {
       expect(
-          TileType.values,
-          containsAll([
-            TileType.sword,
-            TileType.fire,
-            TileType.water,
-            TileType.lightning,
-            TileType.heart,
-          ]));
+        TileType.values,
+        containsAll([
+          TileType.sword,
+          TileType.fire,
+          TileType.water,
+          TileType.lightning,
+          TileType.heart,
+        ]),
+      );
       expect(TileType.values.length, equals(5));
     });
 
     test('elemental relations: Fire > Lightning > Water > Fire', () {
       // Advantage (1.5)
       expect(
-          TileType.fire.getElementMultiplier(TileType.lightning), equals(1.5));
+        TileType.fire.getElementMultiplier(TileType.lightning),
+        equals(1.5),
+      );
       expect(
-          TileType.lightning.getElementMultiplier(TileType.water), equals(1.5));
+        TileType.lightning.getElementMultiplier(TileType.water),
+        equals(1.5),
+      );
       expect(TileType.water.getElementMultiplier(TileType.fire), equals(1.5));
 
       // Disadvantage (0.75)
       expect(
-          TileType.lightning.getElementMultiplier(TileType.fire), equals(0.75));
-      expect(TileType.water.getElementMultiplier(TileType.lightning),
-          equals(0.75));
+        TileType.lightning.getElementMultiplier(TileType.fire),
+        equals(0.75),
+      );
+      expect(
+        TileType.water.getElementMultiplier(TileType.lightning),
+        equals(0.75),
+      );
       expect(TileType.fire.getElementMultiplier(TileType.water), equals(0.75));
 
       // Neutral (1.0)

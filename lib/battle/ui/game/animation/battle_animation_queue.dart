@@ -72,10 +72,18 @@ class BattleAnimationQueue {
         final fromTileComp = _findTileAt(board, fromPos);
         final toTileComp = _findTileAt(board, toPos);
 
-        fromTileComp?.moveTo(toPos, duration: config.swapDuration);
-        toTileComp?.moveTo(fromPos, duration: config.swapDuration);
-
-        await _wait(config.swapDuration);
+        final futures = <Future<void>>[];
+        if (fromTileComp != null) {
+          futures.add(
+            fromTileComp.moveTo(toPos, duration: config.swapDuration),
+          );
+        }
+        if (toTileComp != null) {
+          futures.add(
+            toTileComp.moveTo(fromPos, duration: config.swapDuration),
+          );
+        }
+        await Future.wait(futures);
 
       case SwapRejected(swap: final swap):
         final fromPos = board.positionFor(swap.from);
@@ -87,15 +95,25 @@ class BattleAnimationQueue {
         // Animate partially towards each other and then back (rollback)
         final midFrom = fromPos + (toPos - fromPos) * 0.4;
         final midTo = toPos + (fromPos - toPos) * 0.4;
-
         final halfDuration = config.rollbackDuration / 2;
-        fromTileComp?.moveTo(midFrom, duration: halfDuration);
-        toTileComp?.moveTo(midTo, duration: halfDuration);
-        await _wait(halfDuration);
 
-        fromTileComp?.moveTo(fromPos, duration: halfDuration);
-        toTileComp?.moveTo(toPos, duration: halfDuration);
-        await _wait(halfDuration);
+        final step1 = <Future<void>>[];
+        if (fromTileComp != null) {
+          step1.add(fromTileComp.moveTo(midFrom, duration: halfDuration));
+        }
+        if (toTileComp != null) {
+          step1.add(toTileComp.moveTo(midTo, duration: halfDuration));
+        }
+        await Future.wait(step1);
+
+        final step2 = <Future<void>>[];
+        if (fromTileComp != null) {
+          step2.add(fromTileComp.moveTo(fromPos, duration: halfDuration));
+        }
+        if (toTileComp != null) {
+          step2.add(toTileComp.moveTo(toPos, duration: halfDuration));
+        }
+        await Future.wait(step2);
 
       case CascadeStarted():
         // Cycle marker for cascade
@@ -108,39 +126,53 @@ class BattleAnimationQueue {
       case SpecialCreated(position: final pos, tile: final tile):
         final tilePos = board.positionFor(pos);
         final existing = _findTileAt(board, tilePos);
-        existing?.tile = tile;
+        if (existing != null) {
+          board.remapTile(
+            existing.tileId,
+            tile,
+            sprite: sprites?[tile.type],
+          );
+        }
 
       case SpecialTriggered():
         // Visual trigger effect
         break;
 
       case TilesCleared(positions: final positions):
+        final compsToClear = <TileComponent>[];
         for (final pos in positions) {
           final targetPos = board.positionFor(pos);
           final tileComp = _findTileAt(board, targetPos);
           if (tileComp != null) {
-            tileComp.animateClear(duration: config.clearDuration);
+            compsToClear.add(tileComp);
           }
         }
-        await _wait(config.clearDuration);
 
-        for (final pos in positions) {
-          final targetPos = board.positionFor(pos);
-          final tileComp = _findTileAt(board, targetPos);
-          if (tileComp != null) {
-            board.removeTile(tileComp.tileId);
-          }
+        final clearFutures = <Future<void>>[];
+        for (final comp in compsToClear) {
+          clearFutures.add(comp.animateClear(duration: config.clearDuration));
+        }
+        await Future.wait(clearFutures);
+
+        for (final comp in compsToClear) {
+          board.removeTile(comp.tileId);
         }
 
       case TilesDropped(drops: final drops):
+        final dropFutures = <Future<void>>[];
         for (final drop in drops) {
           final comp = board.getTile(drop.tile.id);
           final targetPos = board.positionFor(drop.to);
-          comp?.moveTo(targetPos, duration: config.dropDuration);
+          if (comp != null) {
+            dropFutures.add(
+              comp.moveTo(targetPos, duration: config.dropDuration),
+            );
+          }
         }
-        await _wait(config.dropDuration);
+        await Future.wait(dropFutures);
 
       case TilesSpawned(spawns: final spawns):
+        final spawnFutures = <Future<void>>[];
         for (final spawn in spawns) {
           final targetPos = board.positionFor(spawn.position);
           // Spawn starting slightly above the board
@@ -157,19 +189,26 @@ class BattleAnimationQueue {
             sprite: sprites?[spawn.tile.type],
           );
           board.addTile(comp);
-          comp.moveTo(targetPos, duration: config.spawnDuration);
+          spawnFutures.add(
+            comp.moveTo(targetPos, duration: config.spawnDuration),
+          );
         }
-        await _wait(config.spawnDuration);
+        await Future.wait(spawnFutures);
 
       case BoardShuffled(newPositions: final newPositions):
+        final shuffleFutures = <Future<void>>[];
         for (final entry in newPositions.entries) {
           final tileId = entry.key;
           final newPos = entry.value;
           final comp = board.getTile(tileId);
           final targetPos = board.positionFor(newPos);
-          comp?.moveTo(targetPos, duration: config.shuffleDuration);
+          if (comp != null) {
+            shuffleFutures.add(
+              comp.moveTo(targetPos, duration: config.shuffleDuration),
+            );
+          }
         }
-        await _wait(config.shuffleDuration);
+        await Future.wait(shuffleFutures);
 
       case CascadeCompleted(cycle: final cycle):
         onComboStep?.call(cycle);
@@ -184,12 +223,5 @@ class BattleAnimationQueue {
       }
     }
     return null;
-  }
-
-  Future<void> _wait(double durationSeconds) async {
-    if (durationSeconds <= 0) return;
-    await Future<void>.delayed(
-      Duration(milliseconds: (durationSeconds * 1000).round()),
-    );
   }
 }

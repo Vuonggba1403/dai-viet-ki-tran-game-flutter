@@ -30,8 +30,8 @@ class Match3BattleGame extends FlameGame {
   final VoidCallback? onAnimationStart;
   final VoidCallback? onAnimationComplete;
 
-  late BoardComponent _boardComponent;
-  BoardComponent get boardComponent => _boardComponent;
+  BoardComponent? _boardComponent;
+  BoardComponent get boardComponent => _boardComponent!;
 
   BoardGestureController? _gestureController;
   BoardGestureController get gestureController => _gestureController!;
@@ -42,6 +42,7 @@ class Match3BattleGame extends FlameGame {
   final Map<TileType, Sprite> _sprites = {};
 
   bool _isInputLocked = false;
+  bool _hasPendingResize = false;
 
   /// Whether user swipe input is currently locked.
   bool get isInputLocked =>
@@ -70,6 +71,7 @@ class Match3BattleGame extends FlameGame {
     // 2. Initialize GestureController
     final gesture = BoardGestureController(
       boardComponent: board,
+      size: board.size,
       onSwapRequested: handleSwapRequested,
     );
     _gestureController = gesture;
@@ -82,7 +84,14 @@ class Match3BattleGame extends FlameGame {
         onAnimationStart?.call();
       },
       onAnimationComplete: () {
-        gesture.isLocked = _isInputLocked;
+        if (_hasPendingResize) {
+          _hasPendingResize = false;
+          boardComponent.relayoutTiles(
+            sessionController.currentBoard,
+            sprites: _sprites,
+          );
+        }
+        gestureController.isLocked = _isInputLocked;
         onAnimationComplete?.call();
       },
       onComboStep: (cycle) {
@@ -103,16 +112,21 @@ class Match3BattleGame extends FlameGame {
   Future<void> _loadTileSprites() async {
     try {
       images.prefix = '';
-      final swordImage =
-          await images.load(Assets.images.game.tiles.base.sword.path);
-      final fireImage =
-          await images.load(Assets.images.game.tiles.base.fire.path);
-      final waterImage =
-          await images.load(Assets.images.game.tiles.base.water.path);
-      final lightningImage =
-          await images.load(Assets.images.game.tiles.base.lightning.path);
-      final heartImage =
-          await images.load(Assets.images.game.tiles.base.heart.path);
+      final swordImage = await images.load(
+        Assets.images.game.tiles.base.sword.path,
+      );
+      final fireImage = await images.load(
+        Assets.images.game.tiles.base.fire.path,
+      );
+      final waterImage = await images.load(
+        Assets.images.game.tiles.base.water.path,
+      );
+      final lightningImage = await images.load(
+        Assets.images.game.tiles.base.lightning.path,
+      );
+      final heartImage = await images.load(
+        Assets.images.game.tiles.base.heart.path,
+      );
 
       _sprites[TileType.sword] = Sprite(swordImage);
       _sprites[TileType.fire] = Sprite(fireImage);
@@ -130,28 +144,46 @@ class Match3BattleGame extends FlameGame {
     if (isInputLocked) return;
 
     gestureController.isLocked = true;
+    try {
+      final resolution = sessionController.attemptSwap(swap);
 
-    final resolution = sessionController.attemptSwap(swap);
+      await animationQueue.run(
+        events: resolution.events,
+        boardComponent: boardComponent,
+        config: config,
+        sprites: _sprites,
+      );
 
-    await animationQueue.run(
-      events: resolution.events,
-      boardComponent: boardComponent,
-      config: config,
-      sprites: _sprites,
-    );
+      if (_hasPendingResize) {
+        _hasPendingResize = false;
+        boardComponent.relayoutTiles(
+          sessionController.currentBoard,
+          sprites: _sprites,
+        );
+      }
 
-    if (resolution.isSuccess) {
-      onComboChanged?.call(resolution.comboCount);
+      if (resolution.isSuccess) {
+        onComboChanged?.call(resolution.comboCount);
+      }
+    } finally {
+      gestureController.isLocked = _isInputLocked;
     }
-
-    gestureController.isLocked = _isInputLocked;
   }
 
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
-    if (isLoaded) {
+    if (_boardComponent != null) {
       boardComponent.size = size;
+      _gestureController?.size = size;
+      if (animationQueue.isBusy) {
+        _hasPendingResize = true;
+      } else {
+        boardComponent.relayoutTiles(
+          sessionController.currentBoard,
+          sprites: _sprites,
+        );
+      }
     }
   }
 

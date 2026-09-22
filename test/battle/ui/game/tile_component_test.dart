@@ -80,8 +80,11 @@ void main() {
       );
 
       var completed = false;
-      comp.moveTo(Vector2(50, 50),
-          duration: 0, onComplete: () => completed = true);
+      comp.moveTo(
+        Vector2(50, 50),
+        duration: 0,
+        onComplete: () => completed = true,
+      );
 
       expect(comp.position, equals(Vector2(50, 50)));
       expect(completed, isTrue);

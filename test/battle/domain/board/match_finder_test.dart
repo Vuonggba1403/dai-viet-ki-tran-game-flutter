@@ -9,8 +9,9 @@ import 'package:flutter_test/flutter_test.dart' hide MatchFinder;
 
 Board _createEmptyGrid({Set<TileType>? excluded}) {
   final excludedTypes = excluded ?? {TileType.fire};
-  final availableTypes =
-      TileType.values.where((t) => !excludedTypes.contains(t)).toList();
+  final availableTypes = TileType.values
+      .where((t) => !excludedTypes.contains(t))
+      .toList();
 
   final grid = List.generate(
     Board.rowCount,
@@ -30,12 +31,18 @@ void main() {
     test('finds single horizontal 3-match with no special created', () {
       var board = _createEmptyGrid(excluded: {TileType.fire});
       board = board
-          .copyWithUpdatedTile(const BoardPosition(3, 2),
-              const Tile(id: 100, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(3, 3),
-              const Tile(id: 101, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(3, 4),
-              const Tile(id: 102, type: TileType.fire));
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 2),
+            const Tile(id: 100, type: TileType.fire),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 3),
+            const Tile(id: 101, type: TileType.fire),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 4),
+            const Tile(id: 102, type: TileType.fire),
+          );
 
       final matches = MatchFinder.find(board);
 
@@ -44,23 +51,30 @@ void main() {
       expect(matches.first.positions.length, equals(3));
       expect(matches.first.specialCreated, equals(SpecialTileType.none));
       expect(
-          matches.first.positions,
-          containsAll([
-            const BoardPosition(3, 2),
-            const BoardPosition(3, 3),
-            const BoardPosition(3, 4),
-          ]));
+        matches.first.positions,
+        containsAll([
+          const BoardPosition(3, 2),
+          const BoardPosition(3, 3),
+          const BoardPosition(3, 4),
+        ]),
+      );
     });
 
     test('finds vertical 3-match with no special created', () {
       var board = _createEmptyGrid(excluded: {TileType.fire});
       board = board
-          .copyWithUpdatedTile(const BoardPosition(1, 5),
-              const Tile(id: 100, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(2, 5),
-              const Tile(id: 101, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(3, 5),
-              const Tile(id: 102, type: TileType.fire));
+          .copyWithUpdatedTile(
+            const BoardPosition(1, 5),
+            const Tile(id: 100, type: TileType.fire),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(2, 5),
+            const Tile(id: 101, type: TileType.fire),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 5),
+            const Tile(id: 102, type: TileType.fire),
+          );
 
       final matches = MatchFinder.find(board);
 
@@ -85,7 +99,9 @@ void main() {
       expect(matches.first.tileType, equals(TileType.water));
       expect(matches.first.positions.length, equals(4));
       expect(
-          matches.first.specialCreated, equals(SpecialTileType.lineHorizontal));
+        matches.first.specialCreated,
+        equals(SpecialTileType.lineHorizontal),
+      );
       expect(matches.first.specialSpawnPosition, isNotNull);
     });
 
@@ -104,7 +120,9 @@ void main() {
       expect(matches.first.tileType, equals(TileType.lightning));
       expect(matches.first.positions.length, equals(4));
       expect(
-          matches.first.specialCreated, equals(SpecialTileType.lineVertical));
+        matches.first.specialCreated,
+        equals(SpecialTileType.lineVertical),
+      );
     });
 
     test('finds 5-in-a-line and creates powerGem special', () {
@@ -122,8 +140,10 @@ void main() {
       expect(matches.first.tileType, equals(TileType.heart));
       expect(matches.first.positions.length, equals(5));
       expect(matches.first.specialCreated, equals(SpecialTileType.powerGem));
-      expect(matches.first.specialSpawnPosition,
-          equals(const BoardPosition(0, 3)));
+      expect(
+        matches.first.specialSpawnPosition,
+        equals(const BoardPosition(0, 3)),
+      );
     });
 
     test('finds T-shape match and creates bomb special', () {
@@ -139,7 +159,9 @@ void main() {
       ];
       for (final p in positions) {
         board = board.copyWithUpdatedTile(
-            p, Tile(id: p.row * 10 + p.column, type: TileType.fire));
+          p,
+          Tile(id: p.row * 10 + p.column, type: TileType.fire),
+        );
       }
 
       final matches = MatchFinder.find(board);
@@ -148,8 +170,10 @@ void main() {
       expect(matches.first.tileType, equals(TileType.fire));
       expect(matches.first.positions.length, equals(5));
       expect(matches.first.specialCreated, equals(SpecialTileType.bomb));
-      expect(matches.first.specialSpawnPosition,
-          equals(const BoardPosition(3, 2)));
+      expect(
+        matches.first.specialSpawnPosition,
+        equals(const BoardPosition(3, 2)),
+      );
     });
 
     test('finds L-shape match and creates bomb special', () {
@@ -165,7 +189,9 @@ void main() {
       ];
       for (final p in positions) {
         board = board.copyWithUpdatedTile(
-            p, Tile(id: p.row * 10 + p.column, type: TileType.sword));
+          p,
+          Tile(id: p.row * 10 + p.column, type: TileType.sword),
+        );
       }
 
       final matches = MatchFinder.find(board);
@@ -174,8 +200,10 @@ void main() {
       expect(matches.first.tileType, equals(TileType.sword));
       expect(matches.first.positions.length, equals(5));
       expect(matches.first.specialCreated, equals(SpecialTileType.bomb));
-      expect(matches.first.specialSpawnPosition,
-          equals(const BoardPosition(2, 2)));
+      expect(
+        matches.first.specialSpawnPosition,
+        equals(const BoardPosition(2, 2)),
+      );
     });
 
     test('prioritizes swap target as special spawn position when provided', () {
@@ -188,11 +216,15 @@ void main() {
       }
 
       const swapTarget = BoardPosition(0, 3);
-      final matches =
-          MatchFinder.find(board, preferredSpawnPosition: swapTarget);
+      final matches = MatchFinder.find(
+        board,
+        preferredSpawnPosition: swapTarget,
+      );
 
       expect(
-          matches.first.specialCreated, equals(SpecialTileType.lineHorizontal));
+        matches.first.specialCreated,
+        equals(SpecialTileType.lineHorizontal),
+      );
       expect(matches.first.specialSpawnPosition, equals(swapTarget));
     });
 

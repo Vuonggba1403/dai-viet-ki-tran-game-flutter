@@ -170,58 +170,62 @@ void main() {
       );
     });
 
-    test('throws ContentValidationException when stage enemy ID is missing',
-        () {
-      final invalidStage = [
-        {
-          'id': 'stage_1',
-          'display_name_key': 'Stage 1',
-          'turn_limit': 30,
-          'waves': [
-            {
-              'wave_number': 1,
-              'enemy_ids': ['ghost_enemy'],
-            },
-          ],
-        },
-      ];
+    test(
+      'throws ContentValidationException when stage enemy ID is missing',
+      () {
+        final invalidStage = [
+          {
+            'id': 'stage_1',
+            'display_name_key': 'Stage 1',
+            'turn_limit': 30,
+            'waves': [
+              {
+                'wave_number': 1,
+                'enemy_ids': ['ghost_enemy'],
+              },
+            ],
+          },
+        ];
 
-      final ds = _FakeDataSource(
-        heroes: validHeroes,
-        skills: validSkills,
-        enemies: validEnemies,
-        stages: invalidStage,
-      );
-      final repo = BattleContentRepository(localDataSource: ds);
+        final ds = _FakeDataSource(
+          heroes: validHeroes,
+          skills: validSkills,
+          enemies: validEnemies,
+          stages: invalidStage,
+        );
+        final repo = BattleContentRepository(localDataSource: ds);
 
-      expect(
-        repo.getBattleContent,
-        throwsA(isA<ContentValidationException>()),
-      );
-    });
+        expect(
+          repo.getBattleContent,
+          throwsA(isA<ContentValidationException>()),
+        );
+      },
+    );
 
-    test('throws ContentValidationException when hero stat is non-positive',
-        () {
-      final hero = [
-        {
-          ...validHeroes.first,
-          'base_hp': 0,
-        },
-      ];
+    test(
+      'throws ContentValidationException when hero stat is non-positive',
+      () {
+        final hero = [
+          {
+            ...validHeroes.first,
+            'base_hp': 0,
+          },
+        ];
 
-      final ds = _FakeDataSource(
-        heroes: hero,
-        skills: validSkills,
-        enemies: validEnemies,
-        stages: validStages,
-      );
-      final repo = BattleContentRepository(localDataSource: ds);
+        final ds = _FakeDataSource(
+          heroes: hero,
+          skills: validSkills,
+          enemies: validEnemies,
+          stages: validStages,
+        );
+        final repo = BattleContentRepository(localDataSource: ds);
 
-      expect(
-        repo.getBattleContent,
-        throwsA(isA<ContentValidationException>()),
-      );
-    });
+        expect(
+          repo.getBattleContent,
+          throwsA(isA<ContentValidationException>()),
+        );
+      },
+    );
 
     test('throws ContentValidationException when stage has empty waves', () {
       final stage = [
@@ -247,16 +251,152 @@ void main() {
       );
     });
 
-    test('production assets in assets/game_data/ pass all validation rules',
-        () async {
-      TestWidgetsFlutterBinding.ensureInitialized();
-      const ds = LocalBattleContentDataSource();
+    test('throws ContentValidationException when ID format is invalid', () {
+      final invalidHero = [
+        {
+          ...validHeroes.first,
+          'id': 'Hero-1 Invalid',
+        },
+      ];
+      final ds = _FakeDataSource(
+        heroes: invalidHero,
+        skills: validSkills,
+        enemies: validEnemies,
+        stages: validStages,
+      );
       final repo = BattleContentRepository(localDataSource: ds);
-      final content = await repo.getBattleContent();
-      expect(content.heroes.length, greaterThanOrEqualTo(4));
-      expect(content.stages.length, greaterThanOrEqualTo(3));
-      expect(content.skills, isNotEmpty);
-      expect(content.enemies, isNotEmpty);
+
+      expect(repo.getBattleContent, throwsA(isA<ContentValidationException>()));
     });
+
+    test('throws ContentValidationException when startingMana > maxMana', () {
+      final invalidHero = [
+        {
+          ...validHeroes.first,
+          'starting_mana': 150,
+          'max_mana': 100,
+        },
+      ];
+      final ds = _FakeDataSource(
+        heroes: invalidHero,
+        skills: validSkills,
+        enemies: validEnemies,
+        stages: validStages,
+      );
+      final repo = BattleContentRepository(localDataSource: ds);
+
+      expect(repo.getBattleContent, throwsA(isA<ContentValidationException>()));
+    });
+
+    test('throws ContentValidationException when skill effects are empty', () {
+      final invalidSkill = [
+        {
+          ...validSkills.first,
+          'effects': <Map<String, dynamic>>[],
+        },
+      ];
+      final ds = _FakeDataSource(
+        heroes: validHeroes,
+        skills: invalidSkill,
+        enemies: validEnemies,
+        stages: validStages,
+      );
+      final repo = BattleContentRepository(localDataSource: ds);
+
+      expect(repo.getBattleContent, throwsA(isA<ContentValidationException>()));
+    });
+
+    test(
+      'throws ContentValidationException when boss phases are out of order',
+      () {
+        final invalidEnemy = [
+          {
+            ...validEnemies.first,
+            'phases': [
+              {'phase_number': 2, 'hp_threshold_percent': 50},
+            ],
+          },
+        ];
+        final ds = _FakeDataSource(
+          heroes: validHeroes,
+          skills: validSkills,
+          enemies: invalidEnemy,
+          stages: validStages,
+        );
+        final repo = BattleContentRepository(localDataSource: ds);
+
+        expect(
+          repo.getBattleContent,
+          throwsA(isA<ContentValidationException>()),
+        );
+      },
+    );
+
+    test(
+      'throws ContentValidationException when wave numbers are not sequential',
+      () {
+        final invalidStage = [
+          {
+            ...validStages.first,
+            'waves': [
+              {
+                'wave_number': 2,
+                'enemy_ids': ['enemy_1'],
+              },
+            ],
+          },
+        ];
+        final ds = _FakeDataSource(
+          heroes: validHeroes,
+          skills: validSkills,
+          enemies: validEnemies,
+          stages: invalidStage,
+        );
+        final repo = BattleContentRepository(localDataSource: ds);
+
+        expect(
+          repo.getBattleContent,
+          throwsA(isA<ContentValidationException>()),
+        );
+      },
+    );
+
+    test(
+      'throws ContentValidationException when stage rewards contain negative values',
+      () {
+        final invalidStage = [
+          {
+            ...validStages.first,
+            'first_clear_reward': {'gold': -10},
+          },
+        ];
+        final ds = _FakeDataSource(
+          heroes: validHeroes,
+          skills: validSkills,
+          enemies: validEnemies,
+          stages: invalidStage,
+        );
+        final repo = BattleContentRepository(localDataSource: ds);
+
+        expect(
+          repo.getBattleContent,
+          throwsA(isA<ContentValidationException>()),
+        );
+      },
+    );
+
+    test(
+      'production assets in assets/game_data/ pass all validation rules',
+      () async {
+        TestWidgetsFlutterBinding.ensureInitialized();
+        const ds = LocalBattleContentDataSource();
+        final repo = BattleContentRepository(localDataSource: ds);
+        final content = await repo.getBattleContent();
+        expect(content.heroes.length, greaterThanOrEqualTo(4));
+        expect(content.stages.length, greaterThanOrEqualTo(3));
+        expect(content.skills, isNotEmpty);
+        expect(content.enemies, isNotEmpty);
+      },
+    );
   });
 }

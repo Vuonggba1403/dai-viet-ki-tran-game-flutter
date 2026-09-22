@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ezwork/battle/domain/board/special_tile_type.dart';
 import 'package:ezwork/battle/domain/board/tile.dart';
 import 'package:ezwork/battle/domain/board/tile_type.dart';
@@ -16,13 +18,13 @@ class TileComponent extends PositionComponent {
     super.position,
     super.size,
     this.sprite,
-  })  : tile = initialTile,
-        super(
-          anchor: Anchor.center,
-        );
+  }) : tile = initialTile,
+       super(
+         anchor: Anchor.center,
+       );
 
   /// Stable unique runtime ID corresponding to [Tile.id].
-  final int tileId;
+  int tileId;
 
   /// The current domain tile represented by this component.
   Tile tile;
@@ -31,7 +33,7 @@ class TileComponent extends PositionComponent {
   Sprite? sprite;
 
   /// Animates movement to [targetPosition] over [duration] seconds.
-  void moveTo(
+  Future<void> moveTo(
     Vector2 targetPosition, {
     required double duration,
     VoidCallback? onComplete,
@@ -39,20 +41,26 @@ class TileComponent extends PositionComponent {
     if (duration <= 0) {
       position = targetPosition;
       onComplete?.call();
-      return;
+      return Future.value();
     }
 
+    final completer = Completer<void>();
     add(
       MoveEffect.to(
         targetPosition,
         EffectController(duration: duration, curve: Curves.easeInOut),
-        onComplete: onComplete,
+        target: this,
+        onComplete: () {
+          onComplete?.call();
+          if (!completer.isCompleted) completer.complete();
+        },
       ),
     );
+    return completer.future;
   }
 
   /// Animates scaling to [targetScale] over [duration] seconds.
-  void animateScale(
+  Future<void> animateScale(
     Vector2 targetScale, {
     required double duration,
     VoidCallback? onComplete,
@@ -60,24 +68,29 @@ class TileComponent extends PositionComponent {
     if (duration <= 0) {
       scale = targetScale;
       onComplete?.call();
-      return;
+      return Future.value();
     }
 
+    final completer = Completer<void>();
     add(
       ScaleEffect.to(
         targetScale,
         EffectController(duration: duration, curve: Curves.easeInOut),
-        onComplete: onComplete,
+        onComplete: () {
+          onComplete?.call();
+          if (!completer.isCompleted) completer.complete();
+        },
       ),
     );
+    return completer.future;
   }
 
   /// Animates scale down to zero and calls [onComplete] when cleared.
-  void animateClear({
+  Future<void> animateClear({
     required double duration,
     VoidCallback? onComplete,
   }) {
-    animateScale(
+    return animateScale(
       Vector2.zero(),
       duration: duration,
       onComplete: onComplete,

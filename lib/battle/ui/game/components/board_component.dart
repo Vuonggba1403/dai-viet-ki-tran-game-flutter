@@ -55,10 +55,12 @@ class BoardComponent extends PositionComponent {
 
   /// Calculates the center [Vector2] position for a given [BoardPosition].
   Vector2 positionFor(BoardPosition pos) {
-    final x = _boardOffsetLeft +
+    final x =
+        _boardOffsetLeft +
         pos.column * (_tileSize + config.tileSpacing) +
         (_tileSize / 2);
-    final y = _boardOffsetTop +
+    final y =
+        _boardOffsetTop +
         pos.row * (_tileSize + config.tileSpacing) +
         (_tileSize / 2);
     return Vector2(x, y);
@@ -134,6 +136,75 @@ class BoardComponent extends PositionComponent {
   void removeTile(int tileId) {
     final comp = _tilesById.remove(tileId);
     comp?.removeFromParent();
+  }
+
+  /// Remaps an existing tile component to a new tile ID and data (e.g. upon special tile creation).
+  void remapTile(int oldId, Tile newTile, {Sprite? sprite}) {
+    final comp = _tilesById.remove(oldId);
+    if (comp != null) {
+      comp
+        ..tileId = newTile.id
+        ..tile = newTile;
+      if (sprite != null) {
+        comp.sprite = sprite;
+      }
+      _tilesById[newTile.id] = comp;
+    }
+  }
+
+  /// Relayouts all existing tile components to fit resized board geometry.
+  /// Reconciles components against [currentBoard] without duplicating or losing tiles.
+  void relayoutTiles(Board currentBoard, {Map<TileType, Sprite>? sprites}) {
+    _computeLayout();
+    final newTileSize = Vector2.all(_tileSize);
+
+    // 1. Identify all active tile IDs in current domain board
+    final activeIds = <int>{};
+    for (var r = 0; r < Board.rowCount; r++) {
+      for (var c = 0; c < Board.columnCount; c++) {
+        final tile = currentBoard.getTileAt(r, c);
+        if (tile != null) activeIds.add(tile.id);
+      }
+    }
+
+    // 2. Remove any orphaned tile components not in current domain board
+    final obsoleteIds = _tilesById.keys
+        .where((id) => !activeIds.contains(id))
+        .toList();
+    for (final id in obsoleteIds) {
+      final comp = _tilesById.remove(id);
+      comp?.removeFromParent();
+    }
+
+    // 3. Update or reconcile all 49 slots
+    for (var r = 0; r < Board.rowCount; r++) {
+      for (var c = 0; c < Board.columnCount; c++) {
+        final pos = BoardPosition(r, c);
+        final tile = currentBoard.getTileAt(r, c);
+        if (tile != null) {
+          var comp = _tilesById[tile.id];
+          if (comp == null) {
+            comp = TileComponent(
+              tileId: tile.id,
+              initialTile: tile,
+              position: positionFor(pos),
+              size: newTileSize,
+              sprite: sprites?[tile.type],
+            );
+            _tilesById[tile.id] = comp;
+            add(comp);
+          } else {
+            comp
+              ..tile = tile
+              ..size = newTileSize
+              ..position = positionFor(pos);
+            if (sprites?[tile.type] != null) {
+              comp.sprite = sprites![tile.type];
+            }
+          }
+        }
+      }
+    }
   }
 
   @override

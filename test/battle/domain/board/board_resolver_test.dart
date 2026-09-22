@@ -68,23 +68,25 @@ void main() {
       expect(res2.events[1], isA<SwapRejected>());
     });
 
-    test('rejects swap that creates no match and preserves board integrity',
-        () {
-      final board = _createNonMatchingBoard();
-      final rng = SeededRandom(1);
+    test(
+      'rejects swap that creates no match and preserves board integrity',
+      () {
+        final board = _createNonMatchingBoard();
+        final rng = SeededRandom(1);
 
-      const uselessSwap = Swap(
-        from: BoardPosition(0, 0),
-        to: BoardPosition(0, 1),
-      );
-      final res = BoardResolver.resolveSwap(board, uselessSwap, rng);
+        const uselessSwap = Swap(
+          from: BoardPosition(0, 0),
+          to: BoardPosition(0, 1),
+        );
+        final res = BoardResolver.resolveSwap(board, uselessSwap, rng);
 
-      expect(res.isSuccess, isFalse);
-      expect(res.comboCount, equals(0));
-      expect(res.events.first, isA<SwapStarted>());
-      expect(res.events.last, isA<SwapRejected>());
-      expect(res.finalBoard.checksum, equals(board.checksum));
-    });
+        expect(res.isSuccess, isFalse);
+        expect(res.comboCount, equals(0));
+        expect(res.events.first, isA<SwapStarted>());
+        expect(res.events.last, isA<SwapRejected>());
+        expect(res.finalBoard.checksum, equals(board.checksum));
+      },
+    );
 
     test('rejects a swap when only an unrelated prematch exists', () {
       var board = _createNonMatchingBoard();
@@ -116,14 +118,22 @@ void main() {
       // Setup a valid horizontal match by swapping (3, 2) and (3, 3)
       // Row 3: water, water, [fire], [water]
       board = board
-          .copyWithUpdatedTile(const BoardPosition(3, 0),
-              const Tile(id: 1, type: TileType.water))
-          .copyWithUpdatedTile(const BoardPosition(3, 1),
-              const Tile(id: 2, type: TileType.water))
           .copyWithUpdatedTile(
-              const BoardPosition(3, 2), const Tile(id: 3, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(3, 3),
-              const Tile(id: 4, type: TileType.water));
+            const BoardPosition(3, 0),
+            const Tile(id: 1, type: TileType.water),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 1),
+            const Tile(id: 2, type: TileType.water),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 2),
+            const Tile(id: 3, type: TileType.fire),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 3),
+            const Tile(id: 4, type: TileType.water),
+          );
 
       final rng = SeededRandom(42);
       const swap = Swap(from: BoardPosition(3, 2), to: BoardPosition(3, 3));
@@ -155,17 +165,29 @@ void main() {
       // Swapping (1, 2) [sword] and (2, 2) [fire] creates horizontal 4-match at row 1!
       board = board
           .copyWithUpdatedTile(
-              const BoardPosition(1, 0), const Tile(id: 1, type: TileType.fire))
+            const BoardPosition(1, 0),
+            const Tile(id: 1, type: TileType.fire),
+          )
           .copyWithUpdatedTile(
-              const BoardPosition(1, 1), const Tile(id: 2, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(1, 2),
-              const Tile(id: 3, type: TileType.sword))
+            const BoardPosition(1, 1),
+            const Tile(id: 2, type: TileType.fire),
+          )
           .copyWithUpdatedTile(
-              const BoardPosition(1, 3), const Tile(id: 4, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(1, 4),
-              const Tile(id: 99, type: TileType.water))
-          .copyWithUpdatedTile(const BoardPosition(2, 2),
-              const Tile(id: 5, type: TileType.fire));
+            const BoardPosition(1, 2),
+            const Tile(id: 3, type: TileType.sword),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(1, 3),
+            const Tile(id: 4, type: TileType.fire),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(1, 4),
+            const Tile(id: 99, type: TileType.water),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(2, 2),
+            const Tile(id: 5, type: TileType.fire),
+          );
 
       final rng = SeededRandom(123);
       const swap = Swap(from: BoardPosition(2, 2), to: BoardPosition(1, 2));
@@ -179,8 +201,10 @@ void main() {
         specialCreatedEvents.first.specialType,
         equals(SpecialTileType.lineHorizontal),
       );
-      expect(specialCreatedEvents.first.position,
-          equals(const BoardPosition(1, 2)));
+      expect(
+        specialCreatedEvents.first.position,
+        equals(const BoardPosition(1, 2)),
+      );
     });
 
     test('resolves Power Gem swap by clearing all tiles of target element', () {
@@ -191,8 +215,10 @@ void main() {
         type: TileType.fire,
         specialType: SpecialTileType.powerGem,
       );
-      board =
-          board.copyWithUpdatedTile(const BoardPosition(3, 3), powerGemTile);
+      board = board.copyWithUpdatedTile(
+        const BoardPosition(3, 3),
+        powerGemTile,
+      );
 
       final rng = SeededRandom(55);
       // Swap with (3, 4) which is adjacent
@@ -217,8 +243,10 @@ void main() {
         greaterThan(res.events.indexWhere((event) => event is CascadeStarted)),
       );
       // Affected positions must contain target type tiles
-      expect(powerGemEvents.single.affectedPositions,
-          contains(const BoardPosition(3, 4)));
+      expect(
+        powerGemEvents.single.affectedPositions,
+        contains(const BoardPosition(3, 4)),
+      );
     });
 
     test('allocates new tile IDs above every existing runtime ID', () {
@@ -253,8 +281,11 @@ void main() {
           .map((tile) => tile.id)
           .reduce((a, b) => a > b ? a : b);
       final created = resolution.events.whereType<SpecialCreated>().first;
-      final finalIds =
-          resolution.finalBoard.toMap().values.map((tile) => tile.id).toList();
+      final finalIds = resolution.finalBoard
+          .toMap()
+          .values
+          .map((tile) => tile.id)
+          .toList();
 
       expect(created.tile.id, greaterThan(originalMaxId));
       expect(finalIds.toSet(), hasLength(Board.totalTiles));
@@ -346,40 +377,49 @@ void main() {
     });
 
     test(
-        'dead board automatically triggers BoardShuffled event with new legal moves',
-        () {
-      // Create a dead board (checkerboard)
-      final grid = List.generate(
-        Board.rowCount,
-        (r) => List.generate(
-          Board.columnCount,
-          (c) => Tile(
-            id: r * Board.columnCount + c + 1,
-            type: (r + c).isEven ? TileType.sword : TileType.heart,
+      'dead board automatically triggers BoardShuffled event with new legal moves',
+      () {
+        // Create a dead board (checkerboard)
+        final grid = List.generate(
+          Board.rowCount,
+          (r) => List.generate(
+            Board.columnCount,
+            (c) => Tile(
+              id: r * Board.columnCount + c + 1,
+              type: (r + c).isEven ? TileType.sword : TileType.heart,
+            ),
           ),
-        ),
-      );
-      var deadBoard = Board.fromGrid(grid);
+        );
+        var deadBoard = Board.fromGrid(grid);
 
-      // Add a single 3-match so swap is valid
-      deadBoard = deadBoard
-          .copyWithUpdatedTile(
-              const BoardPosition(0, 0), const Tile(id: 1, type: TileType.fire))
-          .copyWithUpdatedTile(
-              const BoardPosition(0, 1), const Tile(id: 2, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(0, 2),
-              const Tile(id: 3, type: TileType.water))
-          .copyWithUpdatedTile(const BoardPosition(0, 3),
-              const Tile(id: 4, type: TileType.fire));
+        // Add a single 3-match so swap is valid
+        deadBoard = deadBoard
+            .copyWithUpdatedTile(
+              const BoardPosition(0, 0),
+              const Tile(id: 1, type: TileType.fire),
+            )
+            .copyWithUpdatedTile(
+              const BoardPosition(0, 1),
+              const Tile(id: 2, type: TileType.fire),
+            )
+            .copyWithUpdatedTile(
+              const BoardPosition(0, 2),
+              const Tile(id: 3, type: TileType.water),
+            )
+            .copyWithUpdatedTile(
+              const BoardPosition(0, 3),
+              const Tile(id: 4, type: TileType.fire),
+            );
 
-      // After swap, if settled board has no moves, resolver shuffles it
-      final rng = SeededRandom(1);
-      const swap = Swap(from: BoardPosition(0, 2), to: BoardPosition(0, 3));
+        // After swap, if settled board has no moves, resolver shuffles it
+        final rng = SeededRandom(1);
+        const swap = Swap(from: BoardPosition(0, 2), to: BoardPosition(0, 3));
 
-      final res = BoardResolver.resolveSwap(deadBoard, swap, rng);
-      expect(res.isSuccess, isTrue);
-      expect(LegalMoveFinder.hasLegalMove(res.finalBoard), isTrue);
-    });
+        final res = BoardResolver.resolveSwap(deadBoard, swap, rng);
+        expect(res.isSuccess, isTrue);
+        expect(LegalMoveFinder.hasLegalMove(res.finalBoard), isTrue);
+      },
+    );
 
     test('cascade hard cap prevents infinite loops', () {
       expect(BoardResolver.maxCascadeCycles, equals(50));

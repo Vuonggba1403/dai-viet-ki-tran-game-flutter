@@ -44,8 +44,10 @@ class BattleHud extends StatelessWidget {
             if (comboCount > 1) ...[
               Container(
                 key: const Key('combo_badge'),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFFF9800), Color(0xFFE65100)],
@@ -75,8 +77,11 @@ class BattleHud extends StatelessWidget {
             // Pause button
             IconButton(
               key: const Key('pause_button'),
-              icon: const Icon(Icons.pause_circle_outline,
-                  color: Colors.white, size: 30),
+              icon: const Icon(
+                Icons.pause_circle_outline,
+                color: Colors.white,
+                size: 30,
+              ),
               onPressed: onPause,
             ),
           ],

@@ -35,14 +35,22 @@ void main() {
       // Setup row 0: sword, sword, heart, sword
       // Swapping (0, 2) [heart] and (0, 3) [sword] will make (0, 0), (0, 1), (0, 2) all swords!
       board = board
-          .copyWithUpdatedTile(const BoardPosition(0, 0),
-              const Tile(id: 1, type: TileType.sword))
-          .copyWithUpdatedTile(const BoardPosition(0, 1),
-              const Tile(id: 2, type: TileType.sword))
-          .copyWithUpdatedTile(const BoardPosition(0, 2),
-              const Tile(id: 3, type: TileType.heart))
-          .copyWithUpdatedTile(const BoardPosition(0, 3),
-              const Tile(id: 4, type: TileType.sword));
+          .copyWithUpdatedTile(
+            const BoardPosition(0, 0),
+            const Tile(id: 1, type: TileType.sword),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(0, 1),
+            const Tile(id: 2, type: TileType.sword),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(0, 2),
+            const Tile(id: 3, type: TileType.heart),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(0, 3),
+            const Tile(id: 4, type: TileType.sword),
+          );
 
       expect(LegalMoveFinder.hasLegalMove(board), isTrue);
 
@@ -50,7 +58,8 @@ void main() {
       expect(
         moves,
         contains(
-            const Swap(from: BoardPosition(0, 2), to: BoardPosition(0, 3))),
+          const Swap(from: BoardPosition(0, 2), to: BoardPosition(0, 3)),
+        ),
       );
     });
 
@@ -60,13 +69,21 @@ void main() {
       // Swapping (2, 0) and (3, 0) will align 3 fires vertically
       board = board
           .copyWithUpdatedTile(
-              const BoardPosition(0, 0), const Tile(id: 1, type: TileType.fire))
+            const BoardPosition(0, 0),
+            const Tile(id: 1, type: TileType.fire),
+          )
           .copyWithUpdatedTile(
-              const BoardPosition(1, 0), const Tile(id: 2, type: TileType.fire))
-          .copyWithUpdatedTile(const BoardPosition(2, 0),
-              const Tile(id: 3, type: TileType.water))
-          .copyWithUpdatedTile(const BoardPosition(3, 0),
-              const Tile(id: 4, type: TileType.fire));
+            const BoardPosition(1, 0),
+            const Tile(id: 2, type: TileType.fire),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(2, 0),
+            const Tile(id: 3, type: TileType.water),
+          )
+          .copyWithUpdatedTile(
+            const BoardPosition(3, 0),
+            const Tile(id: 4, type: TileType.fire),
+          );
 
       expect(LegalMoveFinder.hasLegalMove(board), isTrue);
 
@@ -74,7 +91,8 @@ void main() {
       expect(
         moves,
         contains(
-            const Swap(from: BoardPosition(2, 0), to: BoardPosition(3, 0))),
+          const Swap(from: BoardPosition(2, 0), to: BoardPosition(3, 0)),
+        ),
       );
     });
 
@@ -83,7 +101,10 @@ void main() {
       board = board.copyWithUpdatedTile(
         const BoardPosition(3, 3),
         const Tile(
-            id: 50, type: TileType.fire, specialType: SpecialTileType.powerGem),
+          id: 50,
+          type: TileType.fire,
+          specialType: SpecialTileType.powerGem,
+        ),
       );
 
       expect(LegalMoveFinder.hasLegalMove(board), isTrue);
@@ -129,13 +150,17 @@ void main() {
       board = board
           .copyWithUpdatedTile(
             const BoardPosition(3, 3),
-            board.getTile(const BoardPosition(3, 3))!.copyWith(
+            board
+                .getTile(const BoardPosition(3, 3))!
+                .copyWith(
                   specialType: SpecialTileType.lineHorizontal,
                 ),
           )
           .copyWithUpdatedTile(
             const BoardPosition(3, 4),
-            board.getTile(const BoardPosition(3, 4))!.copyWith(
+            board
+                .getTile(const BoardPosition(3, 4))!
+                .copyWith(
                   specialType: SpecialTileType.bomb,
                 ),
           );

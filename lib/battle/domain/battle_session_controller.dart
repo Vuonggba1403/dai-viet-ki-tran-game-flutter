@@ -13,9 +13,9 @@ class BattleSessionController {
     required Board initialBoard,
     required RandomService randomService,
     int initialTileId = 10000,
-  })  : _currentBoard = initialBoard,
-        _randomService = randomService,
-        _nextTileId = initialTileId {
+  }) : _currentBoard = initialBoard,
+       _randomService = randomService,
+       _nextTileId = initialTileId {
     _advanceNextTileId();
   }
 

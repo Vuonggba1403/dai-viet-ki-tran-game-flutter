@@ -47,18 +47,19 @@ void main() {
     });
 
     test(
-        'copyWithUpdatedTile returns a new immutable board without mutating original',
-        () {
-      final board = _createSampleBoard();
-      const pos = BoardPosition(2, 3);
-      const newTile = Tile(id: 999, type: TileType.heart);
+      'copyWithUpdatedTile returns a new immutable board without mutating original',
+      () {
+        final board = _createSampleBoard();
+        const pos = BoardPosition(2, 3);
+        const newTile = Tile(id: 999, type: TileType.heart);
 
-      final updatedBoard = board.copyWithUpdatedTile(pos, newTile);
+        final updatedBoard = board.copyWithUpdatedTile(pos, newTile);
 
-      expect(board.getTile(pos)?.id, isNot(equals(999)));
-      expect(updatedBoard.getTile(pos)?.id, equals(999));
-      expect(updatedBoard.getTile(pos)?.type, equals(TileType.heart));
-    });
+        expect(board.getTile(pos)?.id, isNot(equals(999)));
+        expect(updatedBoard.getTile(pos)?.id, equals(999));
+        expect(updatedBoard.getTile(pos)?.type, equals(TileType.heart));
+      },
+    );
 
     test('swapTiles swaps positions correctly and immutably', () {
       final board = _createSampleBoard();
@@ -87,8 +88,10 @@ void main() {
       expect(grid[0].length, equals(7));
 
       expect(
-        () => (map as dynamic)[const BoardPosition(0, 0)] =
-            const Tile(id: 99, type: TileType.sword),
+        () => (map as dynamic)[const BoardPosition(0, 0)] = const Tile(
+          id: 99,
+          type: TileType.sword,
+        ),
         throwsUnsupportedError,
       );
     });

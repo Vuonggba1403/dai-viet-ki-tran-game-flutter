@@ -51,23 +51,25 @@ void main() {
       const corner = BoardPosition(0, 0);
       final cornerNeighbors = corner.orthogonalNeighbors();
       expect(
-          cornerNeighbors,
-          containsAll([
-            const BoardPosition(1, 0),
-            const BoardPosition(0, 1),
-          ]));
+        cornerNeighbors,
+        containsAll([
+          const BoardPosition(1, 0),
+          const BoardPosition(0, 1),
+        ]),
+      );
       expect(cornerNeighbors.length, equals(2));
 
       const center = BoardPosition(3, 3);
       final centerNeighbors = center.orthogonalNeighbors();
       expect(
-          centerNeighbors,
-          containsAll([
-            const BoardPosition(2, 3),
-            const BoardPosition(4, 3),
-            const BoardPosition(3, 2),
-            const BoardPosition(3, 4),
-          ]));
+        centerNeighbors,
+        containsAll([
+          const BoardPosition(2, 3),
+          const BoardPosition(4, 3),
+          const BoardPosition(3, 2),
+          const BoardPosition(3, 4),
+        ]),
+      );
       expect(centerNeighbors.length, equals(4));
     });
 

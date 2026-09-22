@@ -7,16 +7,23 @@ import 'package:flame/events.dart';
 /// Flame component attached to [BoardComponent] that detects user drag/swipe
 /// gestures, converts coordinates to orthogonal adjacent [Swap] commands,
 /// and locks input during active animations.
-class BoardGestureController extends Component with DragCallbacks {
+class BoardGestureController extends PositionComponent with DragCallbacks {
   BoardGestureController({
     required this.boardComponent,
     required this.onSwapRequested,
     this.swipeThreshold = 18.0,
+    super.position,
+    super.size,
   });
 
   final BoardComponent boardComponent;
-  final void Function(Swap swap) onSwapRequested;
+  void Function(Swap swap) onSwapRequested;
   final double swipeThreshold;
+
+  @override
+  bool containsLocalPoint(Vector2 point) {
+    return boardComponent.boardPositionFor(point) != null;
+  }
 
   bool _isLocked = false;
   BoardPosition? _dragStartPosition;

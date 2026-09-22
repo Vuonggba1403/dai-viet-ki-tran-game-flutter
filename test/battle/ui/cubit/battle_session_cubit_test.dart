@@ -56,27 +56,84 @@ void main() {
       },
       skip: 2, // skip loading and initial ready
       expect: () => [
-        isA<BattleSessionStateReady>()
-            .having((s) => s.isPaused, 'isPaused', isTrue),
-        isA<BattleSessionStateReady>()
-            .having((s) => s.isPaused, 'isPaused', isFalse),
+        isA<BattleSessionStateReady>().having(
+          (s) => s.isPaused,
+          'isPaused',
+          isTrue,
+        ),
+        isA<BattleSessionStateReady>().having(
+          (s) => s.isPaused,
+          'isPaused',
+          isFalse,
+        ),
       ],
     );
 
     blocTest<BattleSessionCubit, BattleSessionState>(
-      'updateCombo updates comboCount when higher',
+      'updateCombo sets comboCount directly per resolution',
       build: () => BattleSessionCubit(
         contentRepository: repository,
         initialSeed: 42,
       ),
       act: (cubit) async {
         await cubit.loadStage();
-        cubit.updateCombo(3);
+        cubit
+          ..updateCombo(3)
+          ..updateCombo(1);
       },
       skip: 2,
       expect: () => [
-        isA<BattleSessionStateReady>()
-            .having((s) => s.comboCount, 'comboCount', 3),
+        isA<BattleSessionStateReady>().having(
+          (s) => s.comboCount,
+          'comboCount',
+          3,
+        ),
+        isA<BattleSessionStateReady>().having(
+          (s) => s.comboCount,
+          'comboCount',
+          1,
+        ),
+      ],
+    );
+
+    blocTest<BattleSessionCubit, BattleSessionState>(
+      'loadStage with unknown stageId emits [loading, error] and showError effect',
+      build: () => BattleSessionCubit(
+        contentRepository: repository,
+        initialSeed: 42,
+      ),
+      act: (cubit) => cubit.loadStage(stageId: 'non_existent_stage'),
+      expect: () => [
+        const BattleSessionState.loading(),
+        isA<BattleSessionStateError>().having(
+          (s) => s.errorMessage,
+          'errorMessage',
+          'Màn chơi không tồn tại. Vui lòng chọn lại màn chơi.',
+        ),
+      ],
+      verify: (cubit) {
+        expect(cubit.state, isA<BattleSessionStateError>());
+      },
+    );
+
+    blocTest<BattleSessionCubit, BattleSessionState>(
+      'retryBattle preserves stageId from previous load',
+      build: () => BattleSessionCubit(
+        contentRepository: repository,
+        initialSeed: 42,
+      ),
+      act: (cubit) async {
+        await cubit.loadStage(stageId: 'stage_2');
+        await cubit.retryBattle();
+      },
+      skip: 2, // skip initial loading and stage_2 ready
+      expect: () => [
+        const BattleSessionState.loading(),
+        isA<BattleSessionStateReady>().having(
+          (s) => s.currentStage.id,
+          'stageId',
+          'stage_2',
+        ),
       ],
     );
 

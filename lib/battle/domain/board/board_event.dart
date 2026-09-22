@@ -105,7 +105,7 @@ class CascadeStarted extends BoardEvent {
 /// Emitted when matches are identified in the current cascade cycle.
 class TilesMatched extends BoardEvent {
   TilesMatched({required this.cycle, required List<MatchGroup> matches})
-      : matches = List<MatchGroup>.unmodifiable(matches);
+    : matches = List<MatchGroup>.unmodifiable(matches);
   final int cycle;
   final List<MatchGroup> matches;
 
@@ -148,7 +148,7 @@ class SpecialTriggered extends BoardEvent {
 /// Emitted when tiles are cleared from the board in the current cycle.
 class TilesCleared extends BoardEvent {
   TilesCleared({required this.cycle, required List<BoardPosition> positions})
-      : positions = List<BoardPosition>.unmodifiable(positions);
+    : positions = List<BoardPosition>.unmodifiable(positions);
   final int cycle;
   final List<BoardPosition> positions;
 
@@ -160,7 +160,7 @@ class TilesCleared extends BoardEvent {
 /// Emitted when surviving tiles fall down through gravity.
 class TilesDropped extends BoardEvent {
   TilesDropped({required this.cycle, required List<TileDrop> drops})
-      : drops = List<TileDrop>.unmodifiable(drops);
+    : drops = List<TileDrop>.unmodifiable(drops);
   final int cycle;
   final List<TileDrop> drops;
 
@@ -171,7 +171,7 @@ class TilesDropped extends BoardEvent {
 /// Emitted when empty top cells are refilled with new tiles.
 class TilesSpawned extends BoardEvent {
   TilesSpawned({required this.cycle, required List<TileSpawn> spawns})
-      : spawns = List<TileSpawn>.unmodifiable(spawns);
+    : spawns = List<TileSpawn>.unmodifiable(spawns);
   final int cycle;
   final List<TileSpawn> spawns;
 
@@ -191,7 +191,7 @@ class CascadeCompleted extends BoardEvent {
 /// Emitted when the board has no legal moves remaining and is shuffled.
 class BoardShuffled extends BoardEvent {
   BoardShuffled({required Map<int, BoardPosition> newPositions})
-      : newPositions = Map<int, BoardPosition>.unmodifiable(newPositions);
+    : newPositions = Map<int, BoardPosition>.unmodifiable(newPositions);
 
   /// Map of tile ID to new board position.
   final Map<int, BoardPosition> newPositions;

@@ -37,11 +37,11 @@ class MatchGroup {
 
   @override
   int get hashCode => Object.hash(
-        tileType,
-        Object.hashAllUnordered(positions),
-        specialCreated,
-        specialSpawnPosition,
-      );
+    tileType,
+    Object.hashAllUnordered(positions),
+    specialCreated,
+    specialSpawnPosition,
+  );
 
   @override
   String toString() =>

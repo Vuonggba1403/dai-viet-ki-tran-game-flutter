@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:bloc_effects/bloc_effects.dart';
 import 'package:ezwork/battle/data/repositories/battle_content_repository.dart';
 import 'package:ezwork/battle/domain/battle_session_controller.dart';
@@ -15,25 +13,35 @@ class BattleSessionCubit
   BattleSessionCubit({
     required BattleContentRepository contentRepository,
     int? initialSeed,
-  })  : _contentRepository = contentRepository,
-        _seed = initialSeed ?? DateTime.now().millisecondsSinceEpoch,
-        super(const BattleSessionState.initial());
+  }) : _contentRepository = contentRepository,
+       _seed = initialSeed ?? DateTime.now().millisecondsSinceEpoch,
+       super(const BattleSessionState.initial());
 
   final BattleContentRepository _contentRepository;
   final int _seed;
   final _logger = Logger('BattleSessionCubit');
+  String _currentStageId = 'stage_1';
+
+  /// The most recently requested or active stage ID.
+  String get currentStageId => _currentStageId;
 
   /// Loads battle content and initializes the session for [stageId].
   Future<void> loadStage({String stageId = 'stage_1'}) async {
+    _currentStageId = stageId;
     try {
       emit(const BattleSessionState.loading());
 
       final content = await _contentRepository.getBattleContent();
-      final stage = content.stages.firstWhere(
-        (s) => s.id == stageId,
-        orElse: () => content.stages.first,
-      );
+      final matchingStages = content.stages.where((s) => s.id == stageId);
+      if (matchingStages.isEmpty) {
+        _logger.warning('Requested battle stage "$stageId" does not exist');
+        const errorMsg = 'Màn chơi không tồn tại. Vui lòng chọn lại màn chơi.';
+        emit(const BattleSessionState.error(errorMessage: errorMsg));
+        emitEffect(const BattleSessionEffect.showError(message: errorMsg));
+        return;
+      }
 
+      final stage = matchingStages.first;
       final rng = SeededRandom(_seed);
       final initialBoard = BoardGenerator.generate(rng);
       final controller = BattleSessionController(
@@ -74,11 +82,11 @@ class BattleSessionCubit
     }
   }
 
-  /// Updates current combo display.
+  /// Updates current combo display for the active resolution cycle.
   void updateCombo(int combo) {
     final s = state;
     if (s is BattleSessionStateReady) {
-      emit(s.copyWith(comboCount: math.max(s.comboCount, combo)));
+      emit(s.copyWith(comboCount: combo));
     }
   }
 
@@ -90,10 +98,12 @@ class BattleSessionCubit
   /// Retries the current stage with a fresh board.
   Future<void> retryBattle() async {
     final s = state;
-    if (s is BattleSessionStateReady) {
-      await loadStage(stageId: s.currentStage.id);
-    } else {
-      await loadStage();
-    }
+    final stageIdToRetry = switch (s) {
+      BattleSessionStateReady(:final currentStage) => currentStage.id,
+      BattleSessionStateVictory(:final stage) => stage.id,
+      BattleSessionStateDefeat(:final stage) => stage.id,
+      _ => _currentStageId,
+    };
+    await loadStage(stageId: stageIdToRetry);
   }
 }

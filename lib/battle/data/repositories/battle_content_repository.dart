@@ -65,20 +65,44 @@ class BattleContentRepository {
     return content;
   }
 
+  static final _idRegex = RegExp(r'^[a-z0-9]+(_[a-z0-9]+)*$');
+
   /// Validates all content integrity constraints:
-  /// - Unique IDs within each category
+  /// - Unique IDs and snake_case format within each category
   /// - Reference integrity (hero -> skill, stage wave -> enemy)
+  /// - Non-empty collections (heroes, skills, enemies, stages, effects, waves)
   /// - Positive stats (HP, attack, turn counter, turn limit)
-  /// - Non-empty stages and waves
+  /// - Starting mana within bounds [0, maxMana]
+  /// - Skill effect magnitudes and durations >= 0
+  /// - Enemy boss phases sequential and hpThresholdPercent in [0, 100]
+  /// - Stage wave numbers sequential and rewards non-negative
   static void validateContent({
     required List<HeroDefinition> heroes,
     required List<SkillDefinition> skills,
     required List<EnemyDefinition> enemies,
     required List<StageDefinition> stages,
   }) {
+    if (heroes.isEmpty) {
+      throw const ContentValidationException('Heroes list must not be empty');
+    }
+    if (skills.isEmpty) {
+      throw const ContentValidationException('Skills list must not be empty');
+    }
+    if (enemies.isEmpty) {
+      throw const ContentValidationException('Enemies list must not be empty');
+    }
+    if (stages.isEmpty) {
+      throw const ContentValidationException('Stages list must not be empty');
+    }
+
     // 1. Validate Hero duplicate IDs and stats
     final heroIds = <String>{};
     for (final hero in heroes) {
+      if (hero.id.isEmpty || !_idRegex.hasMatch(hero.id)) {
+        throw ContentValidationException(
+          'Hero has invalid ID format: "${hero.id}"',
+        );
+      }
       if (!heroIds.add(hero.id)) {
         throw ContentValidationException('Duplicate hero ID: "${hero.id}"');
       }
@@ -102,11 +126,21 @@ class BattleContentRepository {
           'Hero "${hero.id}" has non-positive maxMana: ${hero.maxMana}',
         );
       }
+      if (hero.startingMana < 0 || hero.startingMana > hero.maxMana) {
+        throw ContentValidationException(
+          'Hero "${hero.id}" has invalid startingMana: ${hero.startingMana} (maxMana: ${hero.maxMana})',
+        );
+      }
     }
 
-    // 2. Validate Skill duplicate IDs
+    // 2. Validate Skill duplicate IDs and effects
     final skillIds = <String>{};
     for (final skill in skills) {
+      if (skill.id.isEmpty || !_idRegex.hasMatch(skill.id)) {
+        throw ContentValidationException(
+          'Skill has invalid ID format: "${skill.id}"',
+        );
+      }
       if (!skillIds.add(skill.id)) {
         throw ContentValidationException('Duplicate skill ID: "${skill.id}"');
       }
@@ -114,6 +148,28 @@ class BattleContentRepository {
         throw ContentValidationException(
           'Skill "${skill.id}" has negative manaCost: ${skill.manaCost}',
         );
+      }
+      if (skill.effects.isEmpty) {
+        throw ContentValidationException(
+          'Skill "${skill.id}" has no effects defined',
+        );
+      }
+      for (final effect in skill.effects) {
+        if (effect.magnitude < 0) {
+          throw ContentValidationException(
+            'Skill "${skill.id}" effect has negative magnitude: ${effect.magnitude}',
+          );
+        }
+        if (effect.duration < 0) {
+          throw ContentValidationException(
+            'Skill "${skill.id}" effect has negative duration: ${effect.duration}',
+          );
+        }
+        if (effect.count != null && effect.count! < 0) {
+          throw ContentValidationException(
+            'Skill "${skill.id}" effect has negative count: ${effect.count}',
+          );
+        }
       }
     }
 
@@ -129,6 +185,11 @@ class BattleContentRepository {
     // 3. Validate Enemy duplicate IDs and stats
     final enemyIds = <String>{};
     for (final enemy in enemies) {
+      if (enemy.id.isEmpty || !_idRegex.hasMatch(enemy.id)) {
+        throw ContentValidationException(
+          'Enemy has invalid ID format: "${enemy.id}"',
+        );
+      }
       if (!enemyIds.add(enemy.id)) {
         throw ContentValidationException('Duplicate enemy ID: "${enemy.id}"');
       }
@@ -157,15 +218,31 @@ class BattleContentRepository {
           'Enemy "${enemy.id}" has non-positive resetTurnCounter: ${enemy.resetTurnCounter}',
         );
       }
+      if (enemy.phases != null && enemy.phases!.isNotEmpty) {
+        for (var i = 0; i < enemy.phases!.length; i++) {
+          final phase = enemy.phases![i];
+          if (phase.phaseNumber != i + 1) {
+            throw ContentValidationException(
+              'Enemy "${enemy.id}" phaseNumber must be ${i + 1}, got ${phase.phaseNumber}',
+            );
+          }
+          if (phase.hpThresholdPercent < 0 || phase.hpThresholdPercent > 100) {
+            throw ContentValidationException(
+              'Enemy "${enemy.id}" phase ${phase.phaseNumber} hpThresholdPercent must be between 0 and 100: ${phase.hpThresholdPercent}',
+            );
+          }
+        }
+      }
     }
 
     // 4. Validate Stage duplicate IDs, non-empty waves, and enemy references
-    if (stages.isEmpty) {
-      throw const ContentValidationException('Stages list must not be empty');
-    }
-
     final stageIds = <String>{};
     for (final stage in stages) {
+      if (stage.id.isEmpty || !_idRegex.hasMatch(stage.id)) {
+        throw ContentValidationException(
+          'Stage has invalid ID format: "${stage.id}"',
+        );
+      }
       if (!stageIds.add(stage.id)) {
         throw ContentValidationException('Duplicate stage ID: "${stage.id}"');
       }
@@ -179,7 +256,13 @@ class BattleContentRepository {
           'Stage "${stage.id}" has no waves defined',
         );
       }
-      for (final wave in stage.waves) {
+      for (var i = 0; i < stage.waves.length; i++) {
+        final wave = stage.waves[i];
+        if (wave.waveNumber != i + 1) {
+          throw ContentValidationException(
+            'Stage "${stage.id}" wave number must be ${i + 1}, got ${wave.waveNumber}',
+          );
+        }
         if (wave.enemyIds.isEmpty) {
           throw ContentValidationException(
             'Stage "${stage.id}" wave ${wave.waveNumber} has no enemies',
@@ -192,6 +275,16 @@ class BattleContentRepository {
             );
           }
         }
+      }
+      if (stage.firstClearReward.values.any((v) => v < 0)) {
+        throw ContentValidationException(
+          'Stage "${stage.id}" has negative value in firstClearReward',
+        );
+      }
+      if (stage.repeatReward.values.any((v) => v < 0)) {
+        throw ContentValidationException(
+          'Stage "${stage.id}" has negative value in repeatReward',
+        );
       }
     }
   }

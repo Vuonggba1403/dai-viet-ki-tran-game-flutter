@@ -36,14 +36,17 @@ void main() {
         localDataSource: const LocalBattleContentDataSource(),
       );
 
-      when(() => mockUserRepository.getProfile())
-          .thenAnswer((_) async => const User(id: 'test_id', fname: 'Test'));
+      when(
+        () => mockUserRepository.getProfile(),
+      ).thenAnswer((_) async => const User(id: 'test_id', fname: 'Test'));
       when(() => mockUserRepository.hasUserLoggedIn()).thenReturn(true);
 
-      when(() => mockSplashCubit.state)
-          .thenReturn(const SplashState.loaded(hasUserLoggedIn: true));
-      when(() => mockSplashCubit.stream)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => mockSplashCubit.state,
+      ).thenReturn(const SplashState.loaded(hasUserLoggedIn: true));
+      when(
+        () => mockSplashCubit.stream,
+      ).thenAnswer((_) => const Stream.empty());
       when(() => mockSplashCubit.load()).thenAnswer((_) async {});
 
       if (!getIt.isRegistered<SplashCubit>()) {
@@ -67,9 +70,12 @@ void main() {
           ),
         );
       }
+
+      router.go('/${SplashScreenPage.routeName}');
     });
 
     tearDown(() {
+      router.go('/${SplashScreenPage.routeName}');
       if (getIt.isRegistered<SplashCubit>()) {
         getIt.unregister<SplashCubit>();
       }
@@ -81,23 +87,24 @@ void main() {
       }
     });
 
-    testWidgets('router navigates to BattlePage via named route',
-        (tester) async {
+    testWidgets('router navigates to BattlePage via named route', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
         ),
       );
-
       router.goNamed(BattlePage.routeName);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pump(const Duration(milliseconds: 600));
 
       expect(find.byType(BattlePage), findsOneWidget);
     });
 
-    testWidgets('tapping enter battle button on HomePage pushes BattlePage',
-        (tester) async {
+    testWidgets('tapping enter battle button on HomePage pushes BattlePage', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
@@ -105,14 +112,22 @@ void main() {
       );
 
       router.go('/home');
-      await tester.pumpAndSettle();
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+        if (find
+            .byKey(const Key('enter_battle_button'))
+            .evaluate()
+            .isNotEmpty) {
+          break;
+        }
+      }
 
       final enterBtn = find.byKey(const Key('enter_battle_button'));
       expect(enterBtn, findsOneWidget);
 
       await tester.tap(enterBtn);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pump(const Duration(milliseconds: 600));
 
       expect(find.byType(BattlePage), findsOneWidget);
     });

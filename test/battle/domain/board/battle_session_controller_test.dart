@@ -20,19 +20,20 @@ void main() {
     });
 
     test(
-        'initializes with given board and advances nextTileId beyond board max id',
-        () {
-      final controller = BattleSessionController(
-        initialBoard: initialBoard,
-        randomService: rng,
-        initialTileId: 10,
-      );
+      'initializes with given board and advances nextTileId beyond board max id',
+      () {
+        final controller = BattleSessionController(
+          initialBoard: initialBoard,
+          randomService: rng,
+          initialTileId: 10,
+        );
 
-      expect(controller.currentBoard, equals(initialBoard));
-      expect(controller.comboCount, equals(0));
-      // Board generator creates 49 tiles with IDs 1..49, so nextTileId should be at least 50
-      expect(controller.nextTileId, greaterThan(49));
-    });
+        expect(controller.currentBoard, equals(initialBoard));
+        expect(controller.comboCount, equals(0));
+        // Board generator creates 49 tiles with IDs 1..49, so nextTileId should be at least 50
+        expect(controller.nextTileId, greaterThan(49));
+      },
+    );
 
     test('attemptSwap preserves board state when swap is rejected', () {
       // Create a board with known tiles where swap (0,0) and (0,1) produces no match

@@ -29,9 +29,9 @@ class Swap {
 
   @override
   int get hashCode => Object.hash(
-        from.hashCode ^ to.hashCode,
-        from.hashCode ^ to.hashCode,
-      );
+    from.hashCode ^ to.hashCode,
+    from.hashCode ^ to.hashCode,
+  );
 
   @override
   String toString() => 'Swap($from <-> $to)';

@@ -28,9 +28,10 @@ class BoardResolution {
     required this.comboCount,
     required Map<TileType, int> matchedTilesSummary,
     required this.isSuccess,
-  })  : events = List<BoardEvent>.unmodifiable(events),
-        matchedTilesSummary =
-            Map<TileType, int>.unmodifiable(matchedTilesSummary);
+  }) : events = List<BoardEvent>.unmodifiable(events),
+       matchedTilesSummary = Map<TileType, int>.unmodifiable(
+         matchedTilesSummary,
+       );
 
   final Board finalBoard;
   final List<BoardEvent> events;
@@ -92,7 +93,8 @@ class BoardResolver {
     }
 
     // Check for special tile interactions before regular match finding
-    final isPowerGemSwap = tileFrom.specialType == SpecialTileType.powerGem ||
+    final isPowerGemSwap =
+        tileFrom.specialType == SpecialTileType.powerGem ||
         tileTo.specialType == SpecialTileType.powerGem;
     // Simulate swap
     var currentBoard = board.swapTiles(swap.from, swap.to);
@@ -133,8 +135,9 @@ class BoardResolver {
         .values
         .map((tile) => tile.id)
         .reduce((a, b) => a > b ? a : b);
-    var idCounter =
-        nextTileId > maxExistingTileId ? nextTileId : maxExistingTileId + 1;
+    var idCounter = nextTileId > maxExistingTileId
+        ? nextTileId
+        : maxExistingTileId + 1;
 
     // Handle a direct Power Gem swap on cycle 1.
     Set<BoardPosition>? forcedInitialClears;
@@ -165,7 +168,8 @@ class BoardResolver {
               preferredSpawnPosition: (cycle == 1) ? swap.to : null,
             );
 
-      final hasForcedClears = cycle == 1 &&
+      final hasForcedClears =
+          cycle == 1 &&
           forcedInitialClears != null &&
           forcedInitialClears.isNotEmpty;
 
@@ -323,8 +327,11 @@ class BoardResolver {
 
   /// Triggers special tile abilities and cascades chain reactions.
   static Set<BoardPosition> _expandSpecialTriggers(
-      Board board, Set<BoardPosition> initialClears, List<BoardEvent> events,
-      {Set<BoardPosition> initiallyTriggeredPositions = const {}}) {
+    Board board,
+    Set<BoardPosition> initialClears,
+    List<BoardEvent> events, {
+    Set<BoardPosition> initiallyTriggeredPositions = const {},
+  }) {
     final allCleared = Set<BoardPosition>.from(initialClears);
     final queue = List<BoardPosition>.from(initialClears);
     final triggeredSpecialPositions = <BoardPosition>{
