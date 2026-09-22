@@ -1,5 +1,7 @@
 import 'package:dai_viet_ki_tran_game/app/design_system/game_colors.dart';
+import 'package:dai_viet_ki_tran_game/app/di/dependencies.dart';
 import 'package:dai_viet_ki_tran_game/app/ui/widgets/game_viewport.dart';
+import 'package:dai_viet_ki_tran_game/audio/audio.dart';
 import 'package:dai_viet_ki_tran_game/battle/battle.dart';
 import 'package:dai_viet_ki_tran_game/game_shell/ui/widgets/game_bottom_navigation.dart';
 import 'package:dai_viet_ki_tran_game/game_shell/ui/widgets/game_top_resource_bar.dart';
@@ -28,6 +30,9 @@ class _GameShellPageState extends State<GameShellPage> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    if (getIt.isRegistered<AudioController>()) {
+      getIt<AudioController>().enterHome();
+    }
   }
 
   void _handleTabSelected(int index) {
@@ -53,7 +58,10 @@ class _GameShellPageState extends State<GameShellPage> {
                   _buildPlaceholderTab('Trang Bị', Icons.shield_outlined),
                   const HeroesPage(),
                   _buildCampaignTab(context),
-                  _buildPlaceholderTab('Cài Đặt', Icons.settings_rounded),
+                  const SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                    child: AudioSettingsSection(),
+                  ),
                 ],
               ),
             ),
