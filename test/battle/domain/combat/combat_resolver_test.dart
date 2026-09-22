@@ -583,6 +583,70 @@ void main() {
         final manaEvent = events.whereType<CombatHeroManaGained>().first;
         expect(manaEvent.amount, equals(75));
       });
+
+      test(
+        'resolveBoardMatches emits CombatBossPhaseChanged on threshold crossed',
+        () {
+          final boss = EnemyRuntime.fromDefinition(
+            const EnemyDefinition(
+              id: 'boss_test',
+              nameKey: 'Boss Test',
+              maxHp: 500,
+              attack: 50,
+              defense: 0,
+              initialTurnCounter: 2,
+              resetTurnCounter: 2,
+              targetRule: 'lowest_hp',
+              phases: [
+                EnemyPhaseDefinition(
+                  phaseNumber: 2,
+                  hpThresholdPercent: 75,
+                ),
+              ],
+            ),
+          );
+
+          final hero = HeroRuntime.fromDefinition(
+            const HeroDefinition(
+              id: 'h_test',
+              nameKey: 'Test Hero',
+              element: TileType.sword,
+              heroClass: 'w',
+              baseHp: 500,
+              baseAttack: 150, // 150 damage on 3-match -> 350 HP (70% <= 75%)
+              baseDefense: 50,
+              maxMana: 100,
+              startingMana: 0,
+              activeSkillId: 's1',
+            ),
+          );
+
+          final matchGroup = MatchGroup(
+            tileType: TileType.sword,
+            positions: {
+              const BoardPosition(0, 0),
+              const BoardPosition(0, 1),
+              const BoardPosition(0, 2),
+            },
+          );
+
+          final events = resolver.resolveBoardMatches(
+            boardEvents: [
+              TilesMatched(cycle: 1, matches: [matchGroup]),
+            ],
+            heroes: [hero],
+            enemy: boss,
+          );
+
+          final phaseEvents = events
+              .whereType<CombatBossPhaseChanged>()
+              .toList();
+          expect(phaseEvents.length, equals(1));
+          expect(phaseEvents.first.enemyId, equals('boss_test'));
+          expect(phaseEvents.first.phaseNumber, equals(2));
+          expect(phaseEvents.first.hpThresholdPercent, equals(75));
+        },
+      );
     });
   });
 }

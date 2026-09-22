@@ -98,14 +98,16 @@ class CombatResolver {
             final damage = calculateMitigatedDamage(rawDamage, enemy.defense);
 
             final actualDamage = enemy.takeDamage(damage);
-            combatEvents.add(
-              CombatEnemyDamaged(
-                enemyId: enemy.id,
-                damage: actualDamage,
-                remainingHp: enemy.currentHp,
-                isCriticalOrEffective: isCriticalOrEffective,
-              ),
-            );
+            combatEvents
+              ..add(
+                CombatEnemyDamaged(
+                  enemyId: enemy.id,
+                  damage: actualDamage,
+                  remainingHp: enemy.currentHp,
+                  isCriticalOrEffective: isCriticalOrEffective,
+                ),
+              )
+              ..addAll(enemy.checkPhaseTransitions());
 
             // Mana generation: externalized manaPerTile per matched tile
             final manaGain = group.count * balance.manaPerTile;
@@ -234,14 +236,16 @@ class CombatResolver {
         final rawDamage = effect.magnitude * elementMult;
         final damage = calculateMitigatedDamage(rawDamage, enemy.defense);
         final actual = enemy.takeDamage(damage);
-        events.add(
-          CombatEnemyDamaged(
-            enemyId: enemy.id,
-            damage: actual,
-            remainingHp: enemy.currentHp,
-            isCriticalOrEffective: elementMult > 1.0,
-          ),
-        );
+        events
+          ..add(
+            CombatEnemyDamaged(
+              enemyId: enemy.id,
+              damage: actual,
+              remainingHp: enemy.currentHp,
+              isCriticalOrEffective: elementMult > 1.0,
+            ),
+          )
+          ..addAll(enemy.checkPhaseTransitions());
       } else if (effect.type == 'heal') {
         for (final ally in heroes) {
           if (ally.isAlive) {
