@@ -8,6 +8,7 @@ import 'package:ezwork/battle/ui/overlays/battle_hud.dart';
 import 'package:ezwork/battle/ui/view/battle_page.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart' hide MatchFinder;
 
 class _InMemoryBattleDataSource implements LocalBattleContentDataSource {
@@ -468,6 +469,36 @@ void main() {
           );
           expect(tester.takeException(), isNull);
         }
+      },
+    );
+
+    testWidgets(
+      'HUD and HeroTeamRow rebuild on combatRevision update with same combo',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: BattlePage(),
+          ),
+        );
+
+        for (var i = 0; i < 20; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+          if (find.byType(BattleHud).evaluate().isNotEmpty) break;
+        }
+
+        expect(find.byType(BattleHud), findsOneWidget);
+        final cubit = tester
+            .element(find.byType(BattleHud))
+            .read<BattleSessionCubit>();
+        final ready = cubit.state as BattleSessionStateReady;
+
+        // Mutate hero mana and trigger non-lethal skill cast
+        ready.sessionController.heroes.first.gainMana(50);
+        cubit.castSkill(ready.sessionController.heroes.first.id);
+
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+        expect(find.byType(BattleHud), findsOneWidget);
       },
     );
   });

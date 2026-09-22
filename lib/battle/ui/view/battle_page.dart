@@ -222,23 +222,30 @@ class _BattlePageViewState extends State<_BattlePageView> {
           top: 0,
           left: 0,
           right: 0,
-          child: BlocSelector<BattleSessionCubit, BattleSessionState, int>(
-            selector: (s) => s is BattleSessionStateReady ? s.comboCount : 0,
-            builder: (context, combo) {
-              return BattleHud(
-                stageTitle: state.currentStage.displayNameKey,
-                comboCount: combo,
-                enemy: state.sessionController.currentEnemy,
-                remainingTurns: state.sessionController.remainingTurns,
-                currentWave: state.sessionController.currentWaveNumber,
-                totalWaves: state.sessionController.totalWaves,
-                onPause: () {
-                  _game?.pauseBattle();
-                  cubit.pause();
+          child:
+              BlocSelector<
+                BattleSessionCubit,
+                BattleSessionState,
+                ({int combo, int revision})
+              >(
+                selector: (s) => s is BattleSessionStateReady
+                    ? (combo: s.comboCount, revision: s.combatRevision)
+                    : (combo: 0, revision: 0),
+                builder: (context, data) {
+                  return BattleHud(
+                    stageTitle: state.currentStage.displayNameKey,
+                    comboCount: data.combo,
+                    enemy: state.sessionController.currentEnemy,
+                    remainingTurns: state.sessionController.remainingTurns,
+                    currentWave: state.sessionController.currentWaveNumber,
+                    totalWaves: state.sessionController.totalWaves,
+                    onPause: () {
+                      _game?.pauseBattle();
+                      cubit.pause();
+                    },
+                  );
                 },
-              );
-            },
-          ),
+              ),
         ),
 
         // 3. Bottom Hero Team Row (4 heroes HP, Mana, and skill buttons)
@@ -246,10 +253,16 @@ class _BattlePageViewState extends State<_BattlePageView> {
           bottom: 0,
           left: 0,
           right: 0,
-          child: HeroTeamRow(
-            heroes: state.sessionController.heroes,
-            canCastSkill: state.sessionController.canCastSkill,
-            onCastSkill: cubit.castSkill,
+          child: BlocSelector<BattleSessionCubit, BattleSessionState, int>(
+            selector: (s) =>
+                s is BattleSessionStateReady ? s.combatRevision : 0,
+            builder: (context, _) {
+              return HeroTeamRow(
+                heroes: state.sessionController.heroes,
+                canCastSkill: state.sessionController.canCastSkill,
+                onCastSkill: cubit.castSkill,
+              );
+            },
           ),
         ),
 

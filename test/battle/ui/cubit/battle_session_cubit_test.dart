@@ -151,5 +151,50 @@ void main() {
 
       expect(effects, equals([const BattleSessionEffect.exitToHome()]));
     });
+
+    blocTest<BattleSessionCubit, BattleSessionState>(
+      'castSkill for non-lethal skill emits state with incremented combatRevision',
+      build: () => BattleSessionCubit(
+        contentRepository: repository,
+        initialSeed: 42,
+      ),
+      act: (cubit) async {
+        await cubit.loadStage();
+        final s = cubit.state as BattleSessionStateReady;
+        s.sessionController.heroes.first.gainMana(100);
+        cubit.castSkill(s.sessionController.heroes.first.id);
+      },
+      skip: 2, // skip loading and initial ready
+      expect: () => [
+        isA<BattleSessionStateReady>().having(
+          (s) => s.combatRevision,
+          'combatRevision',
+          1,
+        ),
+      ],
+    );
+
+    blocTest<BattleSessionCubit, BattleSessionState>(
+      'consecutive combo updates with same value emit new states with incremented combatRevision',
+      build: () => BattleSessionCubit(
+        contentRepository: repository,
+        initialSeed: 42,
+      ),
+      act: (cubit) async {
+        await cubit.loadStage();
+        cubit
+          ..updateCombo(2)
+          ..updateCombo(2);
+      },
+      skip: 2, // skip loading and initial ready
+      expect: () => [
+        isA<BattleSessionStateReady>()
+            .having((s) => s.comboCount, 'comboCount', 2)
+            .having((s) => s.combatRevision, 'combatRevision', 1),
+        isA<BattleSessionStateReady>()
+            .having((s) => s.comboCount, 'comboCount', 2)
+            .having((s) => s.combatRevision, 'combatRevision', 2),
+      ],
+    );
   });
 }

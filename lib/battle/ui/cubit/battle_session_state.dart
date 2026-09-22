@@ -21,6 +21,7 @@ sealed class BattleSessionState with _$BattleSessionState {
     required BattleSessionController sessionController,
     @Default(0) int comboCount,
     @Default(false) bool isPaused,
+    @Default(0) int combatRevision,
   }) = BattleSessionStateReady;
 
   const factory BattleSessionState.error({

@@ -23,13 +23,18 @@ class BattleSessionCubit
   final int _seed;
   final _logger = Logger('BattleSessionCubit');
   String _currentStageId = 'stage_1';
+  int _combatRevision = 0;
 
   /// The most recently requested or active stage ID.
   String get currentStageId => _currentStageId;
 
+  /// The current combat presentation revision counter.
+  int get combatRevision => _combatRevision;
+
   /// Loads battle content and initializes the session for [stageId].
   Future<void> loadStage({String stageId = 'stage_1'}) async {
     _currentStageId = stageId;
+    _combatRevision = 0;
     try {
       emit(const BattleSessionState.loading());
 
@@ -64,6 +69,7 @@ class BattleSessionCubit
           content: content,
           currentStage: stage,
           sessionController: controller,
+          combatRevision: _combatRevision,
         ),
       );
     } catch (e, stackTrace) {
@@ -96,7 +102,8 @@ class BattleSessionCubit
   void updateCombo(int combo) {
     final s = state;
     if (s is BattleSessionStateReady) {
-      emit(s.copyWith(comboCount: combo));
+      _combatRevision++;
+      emit(s.copyWith(comboCount: combo, combatRevision: _combatRevision));
     }
   }
 
@@ -151,7 +158,13 @@ class BattleSessionCubit
       case BattlePhase.setup:
         final s = state;
         if (s is BattleSessionStateReady) {
-          emit(s.copyWith(comboCount: controller.comboCount));
+          _combatRevision++;
+          emit(
+            s.copyWith(
+              comboCount: controller.comboCount,
+              combatRevision: _combatRevision,
+            ),
+          );
         }
     }
   }
