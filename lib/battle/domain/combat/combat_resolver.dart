@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
 import 'package:ezwork/battle/data/models/skill_definition.dart';
 import 'package:ezwork/battle/domain/board/board_event.dart';
 import 'package:ezwork/battle/domain/board/tile_type.dart';
@@ -11,7 +12,11 @@ import 'package:ezwork/battle/domain/combat/hero_runtime.dart';
 /// Implements GDD damage formulas with defense mitigation, elemental advantage,
 /// and combo scaling without any Flutter or Flame dependencies.
 class CombatResolver {
-  const CombatResolver();
+  const CombatResolver({
+    this.balance = const BattleBalanceDefinition(),
+  });
+
+  final BattleBalanceDefinition balance;
 
   /// Calculates combo damage multiplier based on cascade cycle count.
   ///
@@ -55,15 +60,16 @@ class CombatResolver {
 
       for (final group in matched.matches) {
         if (group.tileType == TileType.heart) {
-          // Team healing: base 80 HP scaled by match count and combo
-          final healAmount = ((group.count / 3.0) * 80.0 * comboMult).round();
+          // Team healing: externalized baseHeal HP scaled by match count and combo
+          final healAmount =
+              ((group.count / 3.0) * balance.baseHeal * comboMult).round();
           for (final hero in heroes) {
             if (hero.isAlive) {
               final actual = hero.heal(healAmount);
               if (actual > 0) {
                 combatEvents.add(
                   CombatHeroHealed(
-                    hero: hero,
+                    heroId: hero.id,
                     amount: actual,
                     currentHp: hero.currentHp,
                   ),
@@ -94,20 +100,20 @@ class CombatResolver {
             final actualDamage = enemy.takeDamage(damage);
             combatEvents.add(
               CombatEnemyDamaged(
-                enemy: enemy,
+                enemyId: enemy.id,
                 damage: actualDamage,
                 remainingHp: enemy.currentHp,
                 isCriticalOrEffective: isCriticalOrEffective,
               ),
             );
 
-            // Mana generation: 10 mana per matched tile
-            final manaGain = group.count * 10;
+            // Mana generation: externalized manaPerTile per matched tile
+            final manaGain = group.count * balance.manaPerTile;
             final actualMana = hero.gainMana(manaGain);
             if (actualMana > 0) {
               combatEvents.add(
                 CombatHeroManaGained(
-                  hero: hero,
+                  heroId: hero.id,
                   amount: actualMana,
                   currentMana: hero.currentMana,
                 ),
@@ -160,7 +166,7 @@ class CombatResolver {
 
     events.add(
       CombatEnemyTurnTicked(
-        enemy: enemy,
+        enemyId: enemy.id,
         remainingTurns: remainingTurns,
       ),
     );
@@ -182,14 +188,14 @@ class CombatResolver {
         events
           ..add(
             CombatEnemyAttacked(
-              enemy: enemy,
-              targetHero: target,
+              enemyId: enemy.id,
+              targetHeroId: target.id,
               damage: actual,
             ),
           )
           ..add(
             CombatHeroDamaged(
-              hero: target,
+              heroId: target.id,
               damage: actual,
               remainingHp: target.currentHp,
             ),
@@ -214,7 +220,7 @@ class CombatResolver {
     hero.spendMana(skill.manaCost);
     final events = <CombatEvent>[
       CombatSkillExecuted(
-        hero: hero,
+        heroId: hero.id,
         skillId: skill.id,
         manaSpent: skill.manaCost,
       ),
@@ -230,7 +236,7 @@ class CombatResolver {
         final actual = enemy.takeDamage(damage);
         events.add(
           CombatEnemyDamaged(
-            enemy: enemy,
+            enemyId: enemy.id,
             damage: actual,
             remainingHp: enemy.currentHp,
             isCriticalOrEffective: elementMult > 1.0,
@@ -243,7 +249,7 @@ class CombatResolver {
             if (actual > 0) {
               events.add(
                 CombatHeroHealed(
-                  hero: ally,
+                  heroId: ally.id,
                   amount: actual,
                   currentHp: ally.currentHp,
                 ),

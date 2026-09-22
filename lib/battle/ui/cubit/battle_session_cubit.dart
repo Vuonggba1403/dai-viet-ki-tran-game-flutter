@@ -59,6 +59,7 @@ class BattleSessionCubit
         heroDefinitions: content.heroes,
         enemyDefinitions: content.enemies,
         skillDefinitions: content.skills,
+        balance: content.balance,
         onStateChanged: () {
           _handleCombatStateChange(controller, stage);
         },

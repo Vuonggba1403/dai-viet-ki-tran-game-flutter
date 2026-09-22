@@ -1,3 +1,4 @@
+import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
 import 'package:ezwork/battle/data/models/enemy_definition.dart';
 import 'package:ezwork/battle/data/models/hero_definition.dart';
 import 'package:ezwork/battle/data/models/skill_definition.dart';
@@ -14,6 +15,7 @@ abstract class BattleContent with _$BattleContent {
     required List<SkillDefinition> skills,
     required List<EnemyDefinition> enemies,
     required List<StageDefinition> stages,
+    @Default(BattleBalanceDefinition()) BattleBalanceDefinition balance,
   }) = _BattleContent;
 
   factory BattleContent.fromJson(Map<String, dynamic> json) =>

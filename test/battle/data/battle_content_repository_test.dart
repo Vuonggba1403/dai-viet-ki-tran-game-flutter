@@ -1,4 +1,5 @@
 import 'package:ezwork/battle/data/data_sources/local_battle_content_data_source.dart';
+import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
 import 'package:ezwork/battle/data/repositories/battle_content_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -396,6 +397,61 @@ void main() {
         expect(content.stages.length, greaterThanOrEqualTo(3));
         expect(content.skills, isNotEmpty);
         expect(content.enemies, isNotEmpty);
+        expect(content.balance.baseHeal, equals(80));
+        expect(content.balance.manaPerTile, equals(10));
+        expect(content.balance.scorePerCombo, equals(100));
+        expect(content.balance.scorePerWaveClear, equals(500));
+      },
+    );
+
+    test(
+      'validates and accepts custom non-negative balance parameters',
+      () async {
+        final ds = _FakeDataSource(
+          heroes: validHeroes,
+          skills: validSkills,
+          enemies: validEnemies,
+          stages: validStages,
+        );
+        final repo = BattleContentRepository(localDataSource: ds);
+        const customBalance = BattleBalanceDefinition(
+          baseHeal: 120,
+          manaPerTile: 15,
+          scorePerCombo: 200,
+          scorePerWaveClear: 1000,
+        );
+        final content = await repo.getBattleContent(
+          customBalance: customBalance,
+        );
+        expect(content.balance.baseHeal, equals(120));
+        expect(content.balance.manaPerTile, equals(15));
+        expect(content.balance.scorePerCombo, equals(200));
+        expect(content.balance.scorePerWaveClear, equals(1000));
+      },
+    );
+
+    test(
+      'throws ContentValidationException when balance values are negative',
+      () {
+        final ds = _FakeDataSource(
+          heroes: validHeroes,
+          skills: validSkills,
+          enemies: validEnemies,
+          stages: validStages,
+        );
+        final repo = BattleContentRepository(localDataSource: ds);
+
+        for (final negBalance in [
+          const BattleBalanceDefinition(baseHeal: -1),
+          const BattleBalanceDefinition(manaPerTile: -5),
+          const BattleBalanceDefinition(scorePerCombo: -10),
+          const BattleBalanceDefinition(scorePerWaveClear: -50),
+        ]) {
+          expect(
+            () => repo.getBattleContent(customBalance: negBalance),
+            throwsA(isA<ContentValidationException>()),
+          );
+        }
       },
     );
   });

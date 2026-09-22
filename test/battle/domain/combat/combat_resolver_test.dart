@@ -1,3 +1,4 @@
+import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
 import 'package:ezwork/battle/data/models/enemy_definition.dart';
 import 'package:ezwork/battle/data/models/hero_definition.dart';
 import 'package:ezwork/battle/data/models/skill_definition.dart';
@@ -441,6 +442,146 @@ void main() {
         expect(enemy.currentHp, equals(300));
         expect(events.whereType<CombatSkillExecuted>(), isNotEmpty);
         expect(events.whereType<CombatEnemyDamaged>(), isNotEmpty);
+      });
+    });
+
+    group('Balance externalization and CombatEvent immutability', () {
+      test(
+        'CombatEvent snapshots are unaffected by subsequent runtime mutations',
+        () {
+          final hero = HeroRuntime.fromDefinition(
+            const HeroDefinition(
+              id: 'h_test',
+              nameKey: 'Test Hero',
+              element: TileType.sword,
+              heroClass: 'w',
+              baseHp: 500,
+              baseAttack: 100,
+              baseDefense: 50,
+              maxMana: 100,
+              startingMana: 0,
+              activeSkillId: 's1',
+            ),
+          );
+          final enemy = EnemyRuntime.fromDefinition(
+            const EnemyDefinition(
+              id: 'e_test',
+              nameKey: 'Test Enemy',
+              maxHp: 400,
+              attack: 50,
+              defense: 0,
+              initialTurnCounter: 1,
+              resetTurnCounter: 2,
+              targetRule: 'lowest_hp',
+            ),
+          );
+
+          final matchGroup = MatchGroup(
+            tileType: TileType.sword,
+            positions: {
+              const BoardPosition(0, 0),
+              const BoardPosition(0, 1),
+              const BoardPosition(0, 2),
+            },
+          );
+
+          final events = resolver.resolveBoardMatches(
+            boardEvents: [
+              TilesMatched(cycle: 1, matches: [matchGroup]),
+            ],
+            heroes: [hero],
+            enemy: enemy,
+          );
+
+          final enemyDamageEvent = events.whereType<CombatEnemyDamaged>().first;
+          final heroManaEvent = events.whereType<CombatHeroManaGained>().first;
+
+          final snapHp = enemyDamageEvent.remainingHp;
+          final snapDamage = enemyDamageEvent.damage;
+          final snapMana = heroManaEvent.currentMana;
+
+          // Mutate entities heavily afterwards
+          enemy.takeDamage(200);
+          hero
+            ..gainMana(40)
+            ..takeDamage(100);
+
+          // Snapshots must remain strictly untouched
+          expect(enemyDamageEvent.remainingHp, equals(snapHp));
+          expect(enemyDamageEvent.damage, equals(snapDamage));
+          expect(heroManaEvent.currentMana, equals(snapMana));
+          expect(enemyDamageEvent.enemyId, equals('e_test'));
+          expect(heroManaEvent.heroId, equals('h_test'));
+        },
+      );
+
+      test('CombatResolver applies custom balance for heal and mana', () {
+        const customBalance = BattleBalanceDefinition(
+          baseHeal: 150,
+          manaPerTile: 25,
+        );
+        const customResolver = CombatResolver(balance: customBalance);
+
+        final hero = HeroRuntime.fromDefinition(
+          const HeroDefinition(
+            id: 'h_test',
+            nameKey: 'Test Hero',
+            element: TileType.sword,
+            heroClass: 'w',
+            baseHp: 500,
+            baseAttack: 100,
+            baseDefense: 50,
+            maxMana: 100,
+            startingMana: 0,
+            activeSkillId: 's1',
+          ),
+        )..takeDamage(300);
+
+        final enemy = EnemyRuntime.fromDefinition(
+          const EnemyDefinition(
+            id: 'e_test',
+            nameKey: 'Test Enemy',
+            maxHp: 400,
+            attack: 50,
+            defense: 0,
+            initialTurnCounter: 2,
+            resetTurnCounter: 2,
+            targetRule: 'lowest_hp',
+          ),
+        );
+
+        final heartGroup = MatchGroup(
+          tileType: TileType.heart,
+          positions: {
+            const BoardPosition(0, 0),
+            const BoardPosition(0, 1),
+            const BoardPosition(0, 2),
+          },
+        );
+        final swordGroup = MatchGroup(
+          tileType: TileType.sword,
+          positions: {
+            const BoardPosition(1, 0),
+            const BoardPosition(1, 1),
+            const BoardPosition(1, 2),
+          },
+        );
+
+        final events = customResolver.resolveBoardMatches(
+          boardEvents: [
+            TilesMatched(cycle: 1, matches: [heartGroup, swordGroup]),
+          ],
+          heroes: [hero],
+          enemy: enemy,
+        );
+
+        // Custom baseHeal = 150
+        final healEvent = events.whereType<CombatHeroHealed>().first;
+        expect(healEvent.amount, equals(150));
+
+        // Custom manaPerTile = 25 * 3 = 75
+        final manaEvent = events.whereType<CombatHeroManaGained>().first;
+        expect(manaEvent.amount, equals(75));
       });
     });
   });

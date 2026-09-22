@@ -1,8 +1,9 @@
-import 'package:ezwork/battle/domain/combat/enemy_runtime.dart';
-import 'package:ezwork/battle/domain/combat/hero_runtime.dart';
 import 'package:meta/meta.dart';
 
-/// Sealed hierarchy of combat events produced during battle resolution.
+/// Sealed hierarchy of immutable combat events produced during battle resolution.
+///
+/// Stores scalar snapshots and entity IDs rather than mutable references to
+/// domain entities, ensuring event immutability across subsequent turn mutations.
 @immutable
 sealed class CombatEvent {
   const CombatEvent();
@@ -10,91 +11,90 @@ sealed class CombatEvent {
 
 class CombatHeroDamaged extends CombatEvent {
   const CombatHeroDamaged({
-    required this.hero,
+    required this.heroId,
     required this.damage,
     required this.remainingHp,
   });
-  final HeroRuntime hero;
+  final String heroId;
   final int damage;
   final int remainingHp;
 
   @override
-  String toString() =>
-      'CombatHeroDamaged(${hero.id}, -$damage, HP: $remainingHp)';
+  String toString() => 'CombatHeroDamaged($heroId, -$damage, HP: $remainingHp)';
 }
 
 class CombatHeroHealed extends CombatEvent {
   const CombatHeroHealed({
-    required this.hero,
+    required this.heroId,
     required this.amount,
     required this.currentHp,
   });
-  final HeroRuntime hero;
+  final String heroId;
   final int amount;
   final int currentHp;
 
   @override
-  String toString() => 'CombatHeroHealed(${hero.id}, +$amount, HP: $currentHp)';
+  String toString() => 'CombatHeroHealed($heroId, +$amount, HP: $currentHp)';
 }
 
 class CombatHeroManaGained extends CombatEvent {
   const CombatHeroManaGained({
-    required this.hero,
+    required this.heroId,
     required this.amount,
     required this.currentMana,
   });
-  final HeroRuntime hero;
+  final String heroId;
   final int amount;
   final int currentMana;
 
   @override
   String toString() =>
-      'CombatHeroManaGained(${hero.id}, +$amount, MP: $currentMana)';
+      'CombatHeroManaGained($heroId, +$amount, MP: $currentMana)';
 }
 
 class CombatEnemyDamaged extends CombatEvent {
   const CombatEnemyDamaged({
-    required this.enemy,
+    required this.enemyId,
     required this.damage,
     required this.remainingHp,
     required this.isCriticalOrEffective,
   });
-  final EnemyRuntime enemy;
+  final String enemyId;
   final int damage;
   final int remainingHp;
   final bool isCriticalOrEffective;
 
   @override
   String toString() =>
-      'CombatEnemyDamaged(${enemy.id}, -$damage, HP: $remainingHp)';
+      'CombatEnemyDamaged($enemyId, -$damage, HP: $remainingHp)';
 }
 
 class CombatEnemyTurnTicked extends CombatEvent {
   const CombatEnemyTurnTicked({
-    required this.enemy,
+    required this.enemyId,
     required this.remainingTurns,
   });
-  final EnemyRuntime enemy;
+  final String enemyId;
   final int remainingTurns;
 
   @override
   String toString() =>
-      'CombatEnemyTurnTicked(${enemy.id}, turns: $remainingTurns)';
+      'CombatEnemyTurnTicked($enemyId, turns: $remainingTurns)';
 }
 
 class CombatEnemyAttacked extends CombatEvent {
   const CombatEnemyAttacked({
-    required this.enemy,
-    required this.targetHero,
+    required this.enemyId,
+    required this.targetHeroId,
     required this.damage,
   });
-  final EnemyRuntime enemy;
-  final HeroRuntime targetHero;
+  final String enemyId;
+  final String targetHeroId;
   final int damage;
 
   @override
   String toString() =>
-      'CombatEnemyAttacked(${enemy.id} -> ${targetHero.id}, dmg: $damage)';
+      'CombatEnemyAttacked($enemyId -> $targetHeroId, dmg: $damage)';
 }
 
 class CombatWaveCleared extends CombatEvent {
@@ -109,30 +109,30 @@ class CombatWaveStarted extends CombatEvent {
   const CombatWaveStarted({
     required this.waveNumber,
     required this.totalWaves,
-    required this.enemy,
+    required this.enemyId,
   });
   final int waveNumber;
   final int totalWaves;
-  final EnemyRuntime enemy;
+  final String enemyId;
 
   @override
   String toString() =>
-      'CombatWaveStarted(wave: $waveNumber/$totalWaves, enemy: ${enemy.id})';
+      'CombatWaveStarted(wave: $waveNumber/$totalWaves, enemy: $enemyId)';
 }
 
 class CombatSkillExecuted extends CombatEvent {
   const CombatSkillExecuted({
-    required this.hero,
+    required this.heroId,
     required this.skillId,
     required this.manaSpent,
   });
-  final HeroRuntime hero;
+  final String heroId;
   final String skillId;
   final int manaSpent;
 
   @override
   String toString() =>
-      'CombatSkillExecuted(${hero.id} cast $skillId, -$manaSpent MP)';
+      'CombatSkillExecuted($heroId cast $skillId, -$manaSpent MP)';
 }
 
 class CombatVictorious extends CombatEvent {
@@ -149,4 +149,19 @@ class CombatDefeated extends CombatEvent {
 
   @override
   String toString() => 'CombatDefeated(reason: $reason)';
+}
+
+class CombatBossPhaseChanged extends CombatEvent {
+  const CombatBossPhaseChanged({
+    required this.enemyId,
+    required this.phaseNumber,
+    required this.hpThresholdPercent,
+  });
+  final String enemyId;
+  final int phaseNumber;
+  final int hpThresholdPercent;
+
+  @override
+  String toString() =>
+      'CombatBossPhaseChanged($enemyId, phase: $phaseNumber, threshold: $hpThresholdPercent%)';
 }

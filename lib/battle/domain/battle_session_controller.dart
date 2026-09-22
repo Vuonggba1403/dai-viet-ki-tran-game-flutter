@@ -1,3 +1,4 @@
+import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
 import 'package:ezwork/battle/data/models/enemy_definition.dart';
 import 'package:ezwork/battle/data/models/hero_definition.dart';
 import 'package:ezwork/battle/data/models/skill_definition.dart';
@@ -28,7 +29,8 @@ class BattleSessionController {
     List<HeroDefinition>? heroDefinitions,
     List<EnemyDefinition>? enemyDefinitions,
     List<SkillDefinition>? skillDefinitions,
-    CombatResolver combatResolver = const CombatResolver(),
+    BattleBalanceDefinition balance = const BattleBalanceDefinition(),
+    CombatResolver? combatResolver,
     void Function()? onStateChanged,
   }) : _currentBoard = initialBoard,
        _randomService = randomService,
@@ -36,7 +38,8 @@ class BattleSessionController {
        _stage = stage,
        _enemyDefinitions = enemyDefinitions,
        _skillDefinitions = skillDefinitions,
-       _combatResolver = combatResolver,
+       _balance = balance,
+       _combatResolver = combatResolver ?? CombatResolver(balance: balance),
        _onStateChanged = onStateChanged {
     _advanceNextTileId();
 
@@ -68,6 +71,7 @@ class BattleSessionController {
   final StageDefinition? _stage;
   final List<EnemyDefinition>? _enemyDefinitions;
   final List<SkillDefinition>? _skillDefinitions;
+  final BattleBalanceDefinition _balance;
   final CombatResolver _combatResolver;
   final void Function()? _onStateChanged;
 
@@ -79,6 +83,9 @@ class BattleSessionController {
   int _totalScore = 0;
   BattlePhase _currentPhase = BattlePhase.setup;
   List<CombatEvent> _lastCombatEvents = const [];
+
+  /// Active balance parameters.
+  BattleBalanceDefinition get balance => _balance;
 
   /// The current settled board state.
   Board get currentBoard => _currentBoard;
@@ -167,7 +174,7 @@ class BattleSessionController {
 
   void _executeCombatTurn(BoardResolution resolution) {
     _remainingTurns--;
-    _totalScore += _comboCount * 100;
+    _totalScore += _comboCount * _balance.scorePerCombo;
     _currentPhase = BattlePhase.applyingCombat;
 
     final events = <CombatEvent>[];
@@ -220,7 +227,7 @@ class BattleSessionController {
         CombatWaveStarted(
           waveNumber: currentWaveNumber,
           totalWaves: totalWaves,
-          enemy: _currentEnemy!,
+          enemyId: _currentEnemy!.id,
         ),
       );
       if (_remainingTurns <= 0) {
@@ -232,7 +239,7 @@ class BattleSessionController {
     } else {
       // All enemies in the active wave are defeated
       events.add(CombatWaveCleared(waveNumber: currentWaveNumber));
-      _totalScore += 500;
+      _totalScore += _balance.scorePerWaveClear;
 
       if (_currentWaveIndex + 1 < totalWaves) {
         // More waves remain
@@ -245,7 +252,7 @@ class BattleSessionController {
             CombatWaveStarted(
               waveNumber: currentWaveNumber,
               totalWaves: totalWaves,
-              enemy: _currentEnemy!,
+              enemyId: _currentEnemy!.id,
             ),
           );
           _currentPhase = BattlePhase.playerInput;

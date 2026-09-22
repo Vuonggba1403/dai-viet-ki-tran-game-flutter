@@ -1,4 +1,5 @@
 import 'package:ezwork/battle/data/data_sources/local_battle_content_data_source.dart';
+import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
 import 'package:ezwork/battle/data/models/battle_content.dart';
 import 'package:ezwork/battle/data/models/enemy_definition.dart';
 import 'package:ezwork/battle/data/models/hero_definition.dart';
@@ -24,8 +25,11 @@ class BattleContentRepository {
   BattleContent? _cachedContent;
 
   /// Loads and validates battle content from JSON. Caches results in-memory.
-  Future<BattleContent> getBattleContent({bool forceRefresh = false}) async {
-    if (_cachedContent != null && !forceRefresh) {
+  Future<BattleContent> getBattleContent({
+    bool forceRefresh = false,
+    BattleBalanceDefinition? customBalance,
+  }) async {
+    if (_cachedContent != null && !forceRefresh && customBalance == null) {
       return _cachedContent!;
     }
 
@@ -47,11 +51,14 @@ class BattleContentRepository {
         .map((e) => StageDefinition.fromJson(e as Map<String, dynamic>))
         .toList();
 
+    final balance = customBalance ?? const BattleBalanceDefinition();
+
     validateContent(
       heroes: heroes,
       skills: skills,
       enemies: enemies,
       stages: stages,
+      balance: balance,
     );
 
     final content = BattleContent(
@@ -59,6 +66,7 @@ class BattleContentRepository {
       skills: List<SkillDefinition>.unmodifiable(skills),
       enemies: List<EnemyDefinition>.unmodifiable(enemies),
       stages: List<StageDefinition>.unmodifiable(stages),
+      balance: balance,
     );
 
     _cachedContent = content;
@@ -76,12 +84,22 @@ class BattleContentRepository {
   /// - Skill effect magnitudes and durations >= 0
   /// - Enemy boss phases sequential and hpThresholdPercent in [0, 100]
   /// - Stage wave numbers sequential and rewards non-negative
+  /// - Non-negative battle balance parameters
   static void validateContent({
     required List<HeroDefinition> heroes,
     required List<SkillDefinition> skills,
     required List<EnemyDefinition> enemies,
     required List<StageDefinition> stages,
+    BattleBalanceDefinition balance = const BattleBalanceDefinition(),
   }) {
+    if (balance.baseHeal < 0 ||
+        balance.manaPerTile < 0 ||
+        balance.scorePerCombo < 0 ||
+        balance.scorePerWaveClear < 0) {
+      throw const ContentValidationException(
+        'Battle balance values must not be negative',
+      );
+    }
     if (heroes.isEmpty) {
       throw const ContentValidationException('Heroes list must not be empty');
     }
