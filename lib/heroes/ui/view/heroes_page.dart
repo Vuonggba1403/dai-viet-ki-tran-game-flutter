@@ -27,6 +27,7 @@ class HeroesPage extends StatefulWidget {
 class _HeroesPageState extends State<HeroesPage> {
   late List<HeroRosterItemViewModel> _heroes;
   bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _HeroesPageState extends State<HeroesPage> {
     if (widget.initialHeroes != null) {
       _heroes = widget.initialHeroes!;
       _isLoading = false;
+      _errorMessage = null;
     } else {
       _loadHeroes();
     }
@@ -44,18 +46,15 @@ class _HeroesPageState extends State<HeroesPage> {
       final repo = getIt<BattleContentRepository>();
       final content = await repo.getBattleContent();
       final definitions = content.heroes;
-      final ranks = ['S', 'A', 'B', 'B'];
 
       if (mounted) {
         setState(() {
           _heroes = [
-            for (var i = 0; i < definitions.length; i++)
-              HeroRosterItemViewModel.fromDefinition(
-                definitions[i],
-                rank: i < ranks.length ? ranks[i] : 'B',
-              ),
+            for (final def in definitions)
+              HeroRosterItemViewModel.fromDefinition(def),
           ];
           _isLoading = false;
+          _errorMessage = null;
         });
       }
     } catch (_) {
@@ -63,6 +62,7 @@ class _HeroesPageState extends State<HeroesPage> {
         setState(() {
           _heroes = const [];
           _isLoading = false;
+          _errorMessage = 'Không thể tải danh sách tướng. Vui lòng thử lại.';
         });
       }
     }
@@ -82,6 +82,47 @@ class _HeroesPageState extends State<HeroesPage> {
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: GameColors.goldPrimary),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        key: const Key('roster_error_view'),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.redAccent,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                _errorMessage!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                key: const Key('roster_retry_button'),
+                onPressed: () {
+                  setState(() {
+                    _isLoading = true;
+                    _errorMessage = null;
+                  });
+                  _loadHeroes();
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Thử lại'),
+              ),
+            ],
+          ),
+        ),
       );
     }
 

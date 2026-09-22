@@ -22,6 +22,9 @@ abstract class HeroDefinition with _$HeroDefinition {
     @JsonKey(name: 'active_skill_id') required String activeSkillId,
     @JsonKey(name: 'asset_key') String? assetKey,
     @JsonKey(name: 'placeholder_color') String? placeholderColor,
+    @Default('B') String rank,
+    @Default(1) int level,
+    int? power,
   }) = _HeroDefinition;
 
   factory HeroDefinition.fromJson(Map<String, dynamic> json) =>

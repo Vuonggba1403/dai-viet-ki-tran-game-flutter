@@ -37,8 +37,10 @@ void main() {
 
       // Verify top resource bar elements
       expect(find.byType(GameTopResourceBar), findsOneWidget);
-      expect(find.text('15'), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
       expect(find.text('9/9'), findsOneWidget);
+      expect(find.text('5000'), findsOneWidget);
+      expect(find.text('100'), findsOneWidget);
 
       // Verify 5 bottom navigation tabs
       expect(find.byKey(const Key('nav_shop')), findsOneWidget);

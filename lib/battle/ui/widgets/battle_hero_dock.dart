@@ -21,7 +21,7 @@ class BattleHeroDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: const BoxDecoration(
         color: Color(0xEB1B1832),
         border: Border(
@@ -33,7 +33,7 @@ class BattleHeroDock extends StatelessWidget {
           for (final hero in heroes) ...[
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 2.5),
                 child: _buildHeroSlot(hero),
               ),
             ),
@@ -47,6 +47,9 @@ class BattleHeroDock extends StatelessWidget {
     final isReady = canCastSkill(hero.id);
     final isDead = !hero.isAlive;
     final elementColor = HeroAssetCatalog.elementColor(hero.element);
+    final portraitPath = HeroAssetCatalog.portraitPath(
+      hero.assetKey ?? 'heroes/swordsman',
+    );
     final hpRatio = hero.maxHp > 0
         ? (hero.currentHp / hero.maxHp).clamp(0.0, 1.0)
         : 0.0;
@@ -55,15 +58,17 @@ class BattleHeroDock extends StatelessWidget {
         : 0.0;
 
     return Opacity(
-      opacity: isDead ? 0.45 : 1.0,
+      opacity: isDead ? 0.5 : 1.0,
       child: Container(
         key: Key('hero_card_${hero.id}'),
         decoration: BoxDecoration(
           color: const Color(0xFF24213D),
           borderRadius: GameRadius.borderMd,
           border: Border.all(
-            color: isReady ? GameColors.goldPrimary : const Color(0xFF3E3960),
-            width: isReady ? 2 : 1,
+            color: isReady && !isDead
+                ? GameColors.goldPrimary
+                : const Color(0xFF3E3960),
+            width: isReady && !isDead ? 1.5 : 1,
           ),
         ),
         padding: const EdgeInsets.all(4),
@@ -71,18 +76,30 @@ class BattleHeroDock extends StatelessWidget {
           key: Key('hero_skill_slot_${hero.id}'),
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Top: Element Dot & Name
+            // Top: Portrait + Name
             Row(
               children: [
+                // Mini Portrait Frame
                 Container(
-                  width: 7,
-                  height: 7,
+                  width: 22,
+                  height: 22,
                   decoration: BoxDecoration(
-                    color: elementColor,
                     shape: BoxShape.circle,
+                    border: Border.all(color: elementColor, width: 1.5),
+                    color: const Color(0xFF141224),
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      portraitPath,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: elementColor,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 3),
+                const SizedBox(width: 4),
+                // Legible Name
                 Expanded(
                   child: Text(
                     HeroAssetCatalog.localizedName(hero.nameKey),
@@ -90,7 +107,7 @@ class BattleHeroDock extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 9,
+                      fontSize: 8.5,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -106,7 +123,7 @@ class BattleHeroDock extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(2),
                   child: Container(
-                    height: 10,
+                    height: 9,
                     color: Colors.black54,
                     child: FractionallySizedBox(
                       alignment: Alignment.centerLeft,
@@ -128,14 +145,14 @@ class BattleHeroDock extends StatelessWidget {
             ),
             const SizedBox(height: 2),
 
-            // Mini Mana Bar & Label
+            // Mini Mana Bar & Label (Shows mana progress)
             Stack(
               alignment: Alignment.center,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(2),
                   child: Container(
-                    height: 10,
+                    height: 9,
                     color: Colors.black54,
                     child: FractionallySizedBox(
                       alignment: Alignment.centerLeft,
@@ -157,15 +174,13 @@ class BattleHeroDock extends StatelessWidget {
             ),
             const SizedBox(height: 3),
 
-            // Skill Button
-            if (isReady && !isDead)
-              HeroSkillButton(
-                heroId: hero.id,
-                isReady: true,
-                onPressed: () => onCastSkill(hero.id),
-              )
-            else
-              const SizedBox(height: 20),
+            // Skill Button: Always visible, stateful (Ready / Insufficient / Defeated)
+            HeroSkillButton(
+              heroId: hero.id,
+              isReady: isReady,
+              isAlive: !isDead,
+              onPressed: () => onCastSkill(hero.id),
+            ),
           ],
         ),
       ),

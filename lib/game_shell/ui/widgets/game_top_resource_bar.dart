@@ -2,33 +2,44 @@ import 'package:dai_viet_ki_tran_game/app/design_system/game_colors.dart';
 import 'package:dai_viet_ki_tran_game/app/design_system/game_radius.dart';
 import 'package:dai_viet_ki_tran_game/app/design_system/game_typography.dart';
 import 'package:dai_viet_ki_tran_game/assets_gen/assets.gen.dart';
+import 'package:dai_viet_ki_tran_game/player/domain/models/player_profile.dart';
 import 'package:flutter/material.dart';
 
 /// Top resource bar displaying Level, Energy (9/9), Gold, and Gems.
 class GameTopResourceBar extends StatelessWidget {
   const GameTopResourceBar({
-    this.level = 15,
-    this.currentEnergy = 9,
-    this.maxEnergy = 9,
-    this.gold = 999999,
-    this.gem = 9999,
+    this.profile,
+    this.level,
+    this.currentEnergy,
+    this.maxEnergy,
+    this.gold,
+    this.gem,
     this.onAddEnergy,
     this.onAddGold,
     this.onAddGem,
     super.key,
   });
 
-  final int level;
-  final int currentEnergy;
-  final int maxEnergy;
-  final int gold;
-  final int gem;
+  final PlayerProfile? profile;
+  final int? level;
+  final int? currentEnergy;
+  final int? maxEnergy;
+  final int? gold;
+  final int? gem;
   final VoidCallback? onAddEnergy;
   final VoidCallback? onAddGold;
   final VoidCallback? onAddGem;
 
   @override
   Widget build(BuildContext context) {
+    final effectiveProfile = profile ?? const PlayerProfile();
+    final effectiveLevel = level ?? effectiveProfile.level;
+    final effectiveCurrentEnergy =
+        currentEnergy ?? effectiveProfile.currentEnergy;
+    final effectiveMaxEnergy = maxEnergy ?? effectiveProfile.maxEnergy;
+    final effectiveGold = gold ?? effectiveProfile.gold;
+    final effectiveGem = gem ?? effectiveProfile.gem;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: const BoxDecoration(
@@ -40,7 +51,7 @@ class GameTopResourceBar extends StatelessWidget {
       child: Row(
         children: [
           // 1. Player Level Badge
-          _buildLevelBadge(level),
+          _buildLevelBadge(effectiveLevel),
           const SizedBox(width: 6),
 
           // 2. Energy pill
@@ -51,7 +62,7 @@ class GameTopResourceBar extends StatelessWidget {
                 size: 16,
                 color: Color(0xFF42A5F5),
               ),
-              text: '$currentEnergy/$maxEnergy',
+              text: '$effectiveCurrentEnergy/$effectiveMaxEnergy',
               onAdd: onAddEnergy,
             ),
           ),
@@ -70,7 +81,7 @@ class GameTopResourceBar extends StatelessWidget {
                   color: GameColors.goldPrimary,
                 ),
               ),
-              text: _formatCompact(gold),
+              text: _formatCompact(effectiveGold),
               onAdd: onAddGold,
             ),
           ),
@@ -84,12 +95,12 @@ class GameTopResourceBar extends StatelessWidget {
                 width: 16,
                 height: 16,
                 errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.diamond_rounded,
+                  Icons.diamond,
                   size: 16,
-                  color: Color(0xFF40C4FF),
+                  color: Color(0xFF00E5FF),
                 ),
               ),
-              text: _formatCompact(gem),
+              text: _formatCompact(effectiveGem),
               onAdd: onAddGem,
             ),
           ),

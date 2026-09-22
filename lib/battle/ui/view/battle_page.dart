@@ -119,15 +119,16 @@ class _BattlePageViewState extends State<_BattlePageView> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 16,
+                        runSpacing: 10,
                         children: [
                           ElevatedButton(
                             key: const Key('session_error_retry_button'),
                             onPressed: cubit.retryBattle,
                             child: const Text('Thử lại'),
                           ),
-                          const SizedBox(width: 16),
                           OutlinedButton(
                             key: const Key('session_error_exit_button'),
                             onPressed: cubit.exitBattle,
@@ -212,6 +213,7 @@ class _BattlePageViewState extends State<_BattlePageView> {
                   child: Match3BoardViewport(
                     gameWidget: _game != null
                         ? GameWidget(
+                            key: const Key('battle_flame_game_widget'),
                             game: _game!,
                             loadingBuilder: (context) => const Center(
                               child: CircularProgressIndicator(
@@ -252,7 +254,11 @@ class _BattlePageViewState extends State<_BattlePageView> {
                                             key: const Key(
                                               'game_error_retry_button',
                                             ),
-                                            onPressed: cubit.retryBattle,
+                                            onPressed: () {
+                                              _game?.pauseBattle();
+                                              _game = null;
+                                              cubit.retryBattle();
+                                            },
                                             child: const Text('Thử lại'),
                                           ),
                                           const SizedBox(width: 16),
@@ -260,7 +266,11 @@ class _BattlePageViewState extends State<_BattlePageView> {
                                             key: const Key(
                                               'game_error_exit_button',
                                             ),
-                                            onPressed: cubit.exitBattle,
+                                            onPressed: () {
+                                              _game?.pauseBattle();
+                                              _game = null;
+                                              cubit.exitBattle();
+                                            },
                                             child: const Text('Thoát'),
                                           ),
                                         ],

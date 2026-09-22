@@ -63,16 +63,7 @@ class _BattleArenaState extends State<BattleArena>
     final activeHero = _activePlayerHero;
     final enemy = widget.enemy;
 
-    final heroAssetKey = activeHero != null
-        ? (activeHero.element.name == 'fire'
-              ? 'heroes/assassin'
-              : activeHero.element.name == 'sword'
-              ? 'heroes/swordsman'
-              : activeHero.element.name == 'lightning'
-              ? 'heroes/monk'
-              : 'heroes/strategist')
-        : 'heroes/swordsman';
-
+    final heroAssetKey = activeHero?.assetKey ?? 'heroes/swordsman';
     final heroSpritePath = HeroAssetCatalog.idleRightPath(heroAssetKey);
     final enemySpritePath = enemy != null
         ? BattleAssetCatalog.enemyIdleLeftPath(enemy.id)
@@ -81,7 +72,7 @@ class _BattleArenaState extends State<BattleArena>
     final isBoss = enemy != null && enemy.id == 'necromancer';
 
     return SizedBox(
-      height: 145,
+      height: 155,
       child: AnimatedBuilder(
         animation: _bobAnimation,
         builder: (context, child) {
@@ -92,15 +83,16 @@ class _BattleArenaState extends State<BattleArena>
             children: [
               // 1. Left side: Player Hero (facing RIGHT)
               Positioned(
-                left: 20,
-                bottom: 8 + bobY,
+                left: 16,
+                bottom: 6 + bobY,
                 child: KeyedSubtree(
                   key: const Key('arena_player_hero'),
                   child: SizedBox(
-                    width: 110,
-                    height: 130,
+                    width: 125,
+                    height: 145,
                     child: BattleCharacterSprite(
                       spritePath: heroSpritePath,
+                      scale: 1.2,
                       fallbackColor: const Color(0xFFE53935),
                     ),
                   ),
@@ -109,16 +101,16 @@ class _BattleArenaState extends State<BattleArena>
 
               // 2. Right side: Enemy (facing LEFT)
               Positioned(
-                right: 20,
-                bottom: 8 + (3.5 - bobY),
+                right: 16,
+                bottom: 6 + (3.5 - bobY),
                 child: KeyedSubtree(
                   key: const Key('arena_enemy'),
                   child: SizedBox(
-                    width: isBoss ? 130 : 110,
-                    height: isBoss ? 140 : 130,
+                    width: isBoss ? 145 : 125,
+                    height: isBoss ? 160 : 145,
                     child: BattleCharacterSprite(
                       spritePath: enemySpritePath,
-                      scale: isBoss ? 1.15 : 1,
+                      scale: isBoss ? 1.4 : 1.2,
                       fallbackColor: const Color(0xFFEF5350),
                     ),
                   ),

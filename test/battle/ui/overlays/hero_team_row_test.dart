@@ -63,41 +63,56 @@ void main() {
       expect(find.text('80/100'), findsOneWidget);
       expect(find.text('10/80'), findsOneWidget);
 
-      // Skill button ready for dinh_bo_linh only
+      // Both skill buttons are always rendered
       expect(
         find.byKey(const Key('hero_skill_button_dinh_bo_linh')),
         findsOneWidget,
       );
       expect(
         find.byKey(const Key('hero_skill_button_nguyen_bac')),
-        findsNothing,
+        findsOneWidget,
       );
     });
 
-    testWidgets('tapping skill button triggers onCastSkill callback', (
-      tester,
-    ) async {
-      String? castHeroId;
+    testWidgets(
+      'tapping skill button triggers onCastSkill callback only when ready',
+      (
+        tester,
+      ) async {
+        String? castHeroId;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: HeroTeamRow(
-              heroes: heroes,
-              canCastSkill: (id) => true,
-              onCastSkill: (id) => castHeroId = id,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: HeroTeamRow(
+                heroes: heroes,
+                canCastSkill: (id) => id == 'dinh_bo_linh',
+                onCastSkill: (id) => castHeroId = id,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      final skillBtn = find.byKey(const Key('hero_skill_button_dinh_bo_linh'));
-      expect(skillBtn, findsOneWidget);
+        // Tapping disabled button does not trigger callback
+        final disabledBtn = find.byKey(
+          const Key('hero_skill_button_nguyen_bac'),
+        );
+        expect(disabledBtn, findsOneWidget);
+        await tester.tap(disabledBtn);
+        await tester.pump();
+        expect(castHeroId, isNull);
 
-      await tester.tap(skillBtn);
-      await tester.pump();
+        // Tapping ready button triggers callback
+        final skillBtn = find.byKey(
+          const Key('hero_skill_button_dinh_bo_linh'),
+        );
+        expect(skillBtn, findsOneWidget);
 
-      expect(castHeroId, equals('dinh_bo_linh'));
-    });
+        await tester.tap(skillBtn);
+        await tester.pump();
+
+        expect(castHeroId, equals('dinh_bo_linh'));
+      },
+    );
   });
 }

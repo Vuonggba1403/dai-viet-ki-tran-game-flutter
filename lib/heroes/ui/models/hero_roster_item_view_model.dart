@@ -22,19 +22,28 @@ class HeroRosterItemViewModel {
   /// Factory adapter creating view model from domain [HeroDefinition].
   factory HeroRosterItemViewModel.fromDefinition(
     HeroDefinition def, {
-    String rank = 'B',
+    String? rank,
+    int? level,
+    int? power,
     bool isSelected = false,
   }) {
     final assetKey = def.assetKey ?? 'heroes/swordsman';
+    final effectiveRank = rank ?? def.rank;
+    final effectiveLevel = level ?? def.level;
+    final effectivePower =
+        power ??
+        def.power ??
+        (def.baseHp + def.baseAttack * 3 + def.baseDefense * 2);
     return HeroRosterItemViewModel(
       id: def.id,
       name: HeroAssetCatalog.localizedName(def.nameKey),
-      rank: rank,
+      rank: effectiveRank,
       element: def.element,
       heroClass: def.heroClass,
       assetKey: assetKey,
       portraitPath: HeroAssetCatalog.portraitPath(assetKey),
-      power: def.baseHp + def.baseAttack * 3,
+      level: effectiveLevel,
+      power: effectivePower,
       isSelected: isSelected,
     );
   }

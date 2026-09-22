@@ -92,11 +92,19 @@ class BattleVersusHud extends StatelessWidget {
             border: Border.all(color: const Color(0xFF42A5F5), width: 1.5),
             color: const Color(0xFF152642),
           ),
-          child: const Center(
-            child: Icon(
-              Icons.person_rounded,
-              size: 24,
-              color: Color(0xFF90CAF9),
+          child: ClipOval(
+            child: Image.asset(
+              HeroAssetCatalog.portraitPath(
+                hero?.assetKey ?? 'heroes/swordsman',
+              ),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Center(
+                child: Icon(
+                  Icons.person_rounded,
+                  size: 24,
+                  color: Color(0xFF90CAF9),
+                ),
+              ),
             ),
           ),
         ),
@@ -265,11 +273,17 @@ class BattleVersusHud extends StatelessWidget {
                 border: Border.all(color: GameColors.hpRed, width: 1.5),
                 color: const Color(0xFF33141E),
               ),
-              child: const Center(
-                child: Icon(
-                  Icons.smart_toy_rounded,
-                  size: 22,
-                  color: Color(0xFFEF9A9A),
+              child: ClipOval(
+                child: Image.asset(
+                  BattleAssetCatalog.enemyAvatarPath(enemy?.id ?? 'bandit'),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Icon(
+                      Icons.smart_toy_rounded,
+                      size: 22,
+                      color: Color(0xFFEF9A9A),
+                    ),
+                  ),
                 ),
               ),
             ),

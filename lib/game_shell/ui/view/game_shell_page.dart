@@ -142,7 +142,10 @@ class _GameShellPageState extends State<GameShellPage> {
               height: 52,
               child: ElevatedButton.icon(
                 key: const Key('enter_battle_button'),
-                onPressed: () => context.pushNamed(BattlePage.routeName),
+                onPressed: () => context.pushNamed(
+                  BattlePage.routeName,
+                  queryParameters: const {'stageId': 'stage_1'},
+                ),
                 icon: const Icon(
                   Icons.sports_esports_rounded,
                   color: Colors.black,

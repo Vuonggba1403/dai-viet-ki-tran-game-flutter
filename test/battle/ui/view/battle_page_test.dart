@@ -346,6 +346,89 @@ void main() {
       },
     );
 
+    testWidgets(
+      'game_error_retry_button callback resets _game and recreates Flame game upon retry',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: BattlePage(),
+          ),
+        );
+
+        for (var i = 0; i < 20; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+          if (find
+              .byKey(const Key('battle_flame_game_widget'))
+              .evaluate()
+              .isNotEmpty) {
+            break;
+          }
+        }
+
+        final gameFinder = find.byKey(const Key('battle_flame_game_widget'));
+        expect(gameFinder, findsOneWidget);
+        final initialGame = tester.widget<GameWidget>(gameFinder).game;
+        expect(initialGame, isNotNull);
+
+        // Extract errorBuilder from the active GameWidget in BattlePage
+        final gameWidget = tester.widget<GameWidget>(gameFinder);
+        final errorBuilder = gameWidget.errorBuilder!;
+        final errorWidget = errorBuilder(
+          tester.element(gameFinder),
+          StateError('Simulated engine glitch'),
+        );
+
+        // Locate and invoke the retry button inside errorWidget
+        ElevatedButton? retryBtn;
+        void searchRetryButton(Widget widget) {
+          if (widget is ElevatedButton &&
+              widget.key == const Key('game_error_retry_button')) {
+            retryBtn = widget;
+            return;
+          }
+          if (widget is Center && widget.child != null) {
+            searchRetryButton(widget.child!);
+          } else if (widget is Padding && widget.child != null) {
+            searchRetryButton(widget.child!);
+          } else if (widget is Column) {
+            for (final child in widget.children) {
+              searchRetryButton(child);
+            }
+          } else if (widget is Row) {
+            for (final child in widget.children) {
+              searchRetryButton(child);
+            }
+          }
+        }
+
+        searchRetryButton(errorWidget);
+        expect(retryBtn, isNotNull);
+        expect(retryBtn!.onPressed, isNotNull);
+
+        // Trigger retry callback
+        retryBtn!.onPressed!();
+
+        // Wait for cubit to complete reload and rebuild BattlePage
+        for (var i = 0; i < 20; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+          if (find
+              .byKey(const Key('battle_flame_game_widget'))
+              .evaluate()
+              .isNotEmpty) {
+            break;
+          }
+        }
+
+        final secondGame = tester
+            .widget<GameWidget>(
+              find.byKey(const Key('battle_flame_game_widget')),
+            )
+            .game;
+        expect(secondGame, isNotNull);
+        expect(identical(initialGame, secondGame), isFalse);
+      },
+    );
+
     testWidgets('renders victory view cleanly without cast exception', (
       tester,
     ) async {

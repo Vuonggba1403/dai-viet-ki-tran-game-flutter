@@ -193,13 +193,15 @@ void main() {
       expect(find.byKey(const Key('hero_card_dinh_bo_linh')), findsOneWidget);
       expect(find.byKey(const Key('hero_card_nguyen_bac')), findsOneWidget);
 
-      // Only dinh_bo_linh can cast
+      // Both skill buttons are always rendered
+      final disabledBtn = find.byKey(const Key('hero_skill_button_nguyen_bac'));
+      expect(disabledBtn, findsOneWidget);
+      await tester.tap(disabledBtn);
+      expect(triggeredHeroId, isNull);
+
+      // Only dinh_bo_linh is ready
       final skillBtn = find.byKey(const Key('hero_skill_button_dinh_bo_linh'));
       expect(skillBtn, findsOneWidget);
-      expect(
-        find.byKey(const Key('hero_skill_button_nguyen_bac')),
-        findsNothing,
-      );
 
       await tester.tap(skillBtn);
       expect(triggeredHeroId, equals('dinh_bo_linh'));
