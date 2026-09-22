@@ -1,0 +1,39 @@
+{
+  "bgm": {
+    "title": "assets/audio/bgm/title_intro.ogg",
+    "home": "assets/audio/bgm/home_loop.ogg",
+    "battle": "assets/audio/bgm/battle_loop.ogg",
+    "boss": "assets/audio/bgm/boss_loop.ogg"
+  },
+  "sfx": {
+    "ui": [
+      "assets/audio/sfx/ui/button_click.ogg",
+      "assets/audio/sfx/ui/panel_open.ogg"
+    ],
+    "match3": [
+      "assets/audio/sfx/match3/tile_swap.ogg",
+      "assets/audio/sfx/match3/match_3.ogg",
+      "assets/audio/sfx/match3/combo_2.ogg",
+      "assets/audio/sfx/match3/combo_3.ogg",
+      "assets/audio/sfx/match3/combo_4.ogg",
+      "assets/audio/sfx/match3/combo_max.ogg"
+    ],
+    "combat": [
+      "assets/audio/sfx/combat/sword_slash.ogg",
+      "assets/audio/sfx/combat/spear_hit.ogg",
+      "assets/audio/sfx/combat/arrow_shot.ogg",
+      "assets/audio/sfx/combat/enemy_hit.ogg",
+      "assets/audio/sfx/combat/critical_hit.ogg"
+    ],
+    "magic": [
+      "assets/audio/sfx/magic/fire_cast.ogg",
+      "assets/audio/sfx/magic/heal.ogg",
+      "assets/audio/sfx/magic/shield.ogg",
+      "assets/audio/sfx/magic/lightning.ogg"
+    ],
+    "result": [
+      "assets/audio/sfx/result/victory.ogg",
+      "assets/audio/sfx/result/defeat.ogg"
+    ]
+  }
+}
