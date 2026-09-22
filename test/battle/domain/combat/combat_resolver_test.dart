@@ -240,6 +240,105 @@ void main() {
         expect(waterHero.currentHp, equals(680));
         expect(combatEvents.whereType<CombatHeroHealed>().length, equals(2));
       });
+
+      test('Heart match healing is order-independent when enemy dies', () {
+        final lethalSwordGroup = MatchGroup(
+          tileType: TileType.sword,
+          positions: {
+            const BoardPosition(0, 0),
+            const BoardPosition(0, 1),
+            const BoardPosition(0, 2),
+          },
+        );
+        final heartGroup = MatchGroup(
+          tileType: TileType.heart,
+          positions: {
+            const BoardPosition(1, 0),
+            const BoardPosition(1, 1),
+            const BoardPosition(1, 2),
+          },
+        );
+
+        // Case A: [lethalSword, heart]
+        final enemyA = EnemyRuntime.fromDefinition(
+          const EnemyDefinition(
+            id: 'weak_enemy',
+            nameKey: 'Weak',
+            maxHp: 50,
+            attack: 10,
+            defense: 0,
+            initialTurnCounter: 1,
+            resetTurnCounter: 1,
+            targetRule: 'lowest_hp',
+          ),
+        );
+        final heroA = HeroRuntime.fromDefinition(
+          const HeroDefinition(
+            id: 'h_sword',
+            nameKey: 'H Sword',
+            element: TileType.sword,
+            heroClass: 'w',
+            baseHp: 1000,
+            baseAttack: 120,
+            baseDefense: 50,
+            maxMana: 100,
+            startingMana: 0,
+            activeSkillId: 's1',
+          ),
+        )..takeDamage(300);
+
+        final eventsA = resolver.resolveBoardMatches(
+          boardEvents: [
+            TilesMatched(cycle: 1, matches: [lethalSwordGroup, heartGroup]),
+          ],
+          heroes: [heroA],
+          enemy: enemyA,
+        );
+
+        // Case B: [heart, lethalSword]
+        final enemyB = EnemyRuntime.fromDefinition(
+          const EnemyDefinition(
+            id: 'weak_enemy',
+            nameKey: 'Weak',
+            maxHp: 50,
+            attack: 10,
+            defense: 0,
+            initialTurnCounter: 1,
+            resetTurnCounter: 1,
+            targetRule: 'lowest_hp',
+          ),
+        );
+        final heroB = HeroRuntime.fromDefinition(
+          const HeroDefinition(
+            id: 'h_sword',
+            nameKey: 'H Sword',
+            element: TileType.sword,
+            heroClass: 'w',
+            baseHp: 1000,
+            baseAttack: 120,
+            baseDefense: 50,
+            maxMana: 100,
+            startingMana: 0,
+            activeSkillId: 's1',
+          ),
+        )..takeDamage(300);
+
+        final eventsB = resolver.resolveBoardMatches(
+          boardEvents: [
+            TilesMatched(cycle: 1, matches: [heartGroup, lethalSwordGroup]),
+          ],
+          heroes: [heroB],
+          enemy: enemyB,
+        );
+
+        expect(enemyA.isAlive, isFalse);
+        expect(enemyB.isAlive, isFalse);
+        expect(heroA.currentHp, equals(heroB.currentHp));
+        expect(
+          eventsA.whereType<CombatHeroHealed>().length,
+          equals(eventsB.whereType<CombatHeroHealed>().length),
+        );
+      });
     });
 
     group('Enemy turn resolution', () {

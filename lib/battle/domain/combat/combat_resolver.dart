@@ -54,8 +54,6 @@ class CombatResolver {
       final comboMult = calculateComboMultiplier(matched.cycle);
 
       for (final group in matched.matches) {
-        if (!enemy.isAlive) break;
-
         if (group.tileType == TileType.heart) {
           // Team healing: base 80 HP scaled by match count and combo
           final healAmount = ((group.count / 3.0) * 80.0 * comboMult).round();
@@ -74,6 +72,8 @@ class CombatResolver {
             }
           }
         } else {
+          if (!enemy.isAlive) continue;
+
           // Offensive tiles (sword, fire, water, lightning)
           final matchingHeroes = heroes
               .where((h) => h.isAlive && h.element == group.tileType)

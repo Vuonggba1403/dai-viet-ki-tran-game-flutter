@@ -212,5 +212,231 @@ void main() {
         isNotEmpty,
       );
     });
+
+    test('multi-enemy wave advances to next enemy without clearing wave', () {
+      const multiStage = StageDefinition(
+        id: 'stage_multi',
+        displayNameKey: 'Multi Wave Stage',
+        turnLimit: 20,
+        waves: [
+          StageWaveDefinition(
+            waveNumber: 1,
+            enemyIds: ['enemy_easy', 'enemy_boss'],
+          ),
+        ],
+      );
+
+      final rng = SeededRandom(42);
+      final board = BoardGenerator.generate(rng);
+      final controller = BattleSessionController(
+        initialBoard: board,
+        randomService: rng,
+        stage: multiStage,
+        heroDefinitions: heroes,
+        enemyDefinitions: enemies,
+        skillDefinitions: skills,
+      );
+
+      expect(controller.currentWaveNumber, equals(1));
+      expect(controller.currentEnemyIndexInWave, equals(0));
+      expect(controller.currentEnemy!.id, equals('enemy_easy'));
+
+      // Kill first enemy with skill
+      controller.heroes.first.gainMana(50);
+      final killEvents = controller.castSkill('hero_fire');
+
+      // First enemy dead, but wave has second enemy
+      expect(killEvents.whereType<CombatWaveCleared>(), isEmpty);
+      expect(controller.totalScore, equals(0)); // no 500 wave bonus
+      expect(controller.currentWaveNumber, equals(1));
+      expect(controller.currentEnemyIndexInWave, equals(1));
+      expect(controller.currentEnemy!.id, equals('enemy_boss'));
+      expect(controller.currentPhase, equals(BattlePhase.playerInput));
+
+      // Kill second enemy (boss)
+      controller.heroes.first.gainMana(50);
+      final bossKillEvents = controller.castSkill('hero_fire');
+
+      // Wave completed & Victory
+      expect(bossKillEvents.whereType<CombatWaveCleared>(), isNotEmpty);
+      expect(bossKillEvents.whereType<CombatVictorious>(), isNotEmpty);
+      expect(controller.currentPhase, equals(BattlePhase.victory));
+      expect(controller.totalScore, equals(500));
+    });
+
+    group('Turn limit enforcement (remainingTurns <= 0)', () {
+      test('Edge 1: killing final enemy on last turn yields victory', () {
+        const singleStage = StageDefinition(
+          id: 'stage_last_turn_victory',
+          displayNameKey: 'Last Turn Victory',
+          turnLimit: 1,
+          waves: [
+            StageWaveDefinition(
+              waveNumber: 1,
+              enemyIds: ['enemy_easy'],
+            ),
+          ],
+        );
+
+        final rng = SeededRandom(42);
+        final board = BoardGenerator.generate(rng);
+        final controller = BattleSessionController(
+          initialBoard: board,
+          randomService: rng,
+          stage: singleStage,
+          heroDefinitions: heroes,
+          enemyDefinitions: enemies,
+          skillDefinitions: skills,
+        );
+
+        // Weaken enemy so swap kills it
+        controller.currentEnemy!.takeDamage(99);
+        expect(controller.currentEnemy!.currentHp, equals(1));
+
+        final moves = LegalMoveFinder.findLegalMoves(board);
+        controller.attemptSwap(moves.first);
+
+        expect(controller.remainingTurns, equals(0));
+        expect(controller.currentEnemy!.isAlive, isFalse);
+        expect(controller.currentPhase, equals(BattlePhase.victory));
+        expect(
+          controller.lastCombatEvents.whereType<CombatVictorious>(),
+          isNotEmpty,
+        );
+      });
+
+      test(
+        'Edge 2: killing first enemy in 2-enemy wave on last turn yields defeat',
+        () {
+          const multiStage = StageDefinition(
+            id: 'stage_last_turn_multi',
+            displayNameKey: 'Last Turn Multi',
+            turnLimit: 1,
+            waves: [
+              StageWaveDefinition(
+                waveNumber: 1,
+                enemyIds: ['enemy_easy', 'enemy_boss'],
+              ),
+            ],
+          );
+
+          final rng = SeededRandom(42);
+          final board = BoardGenerator.generate(rng);
+          final controller = BattleSessionController(
+            initialBoard: board,
+            randomService: rng,
+            stage: multiStage,
+            heroDefinitions: heroes,
+            enemyDefinitions: enemies,
+            skillDefinitions: skills,
+          );
+
+          // Weaken first enemy so swap kills it
+          controller.currentEnemy!.takeDamage(99);
+
+          final moves = LegalMoveFinder.findLegalMoves(board);
+          controller.attemptSwap(moves.first);
+
+          expect(controller.remainingTurns, equals(0));
+          // Second enemy spawned, but no turns remaining -> defeat
+          expect(controller.currentEnemyIndexInWave, equals(1));
+          expect(controller.currentEnemy!.id, equals('enemy_boss'));
+          expect(controller.currentPhase, equals(BattlePhase.defeat));
+          expect(
+            controller.lastCombatEvents.whereType<CombatDefeated>(),
+            isNotEmpty,
+          );
+        },
+      );
+
+      test(
+        'Edge 3: clearing wave 1 on last turn with wave 2 remaining yields defeat',
+        () {
+          const multiWaveStage = StageDefinition(
+            id: 'stage_last_turn_waves',
+            displayNameKey: 'Last Turn Waves',
+            turnLimit: 1,
+            waves: [
+              StageWaveDefinition(
+                waveNumber: 1,
+                enemyIds: ['enemy_easy'],
+              ),
+              StageWaveDefinition(
+                waveNumber: 2,
+                enemyIds: ['enemy_boss'],
+              ),
+            ],
+          );
+
+          final rng = SeededRandom(42);
+          final board = BoardGenerator.generate(rng);
+          final controller = BattleSessionController(
+            initialBoard: board,
+            randomService: rng,
+            stage: multiWaveStage,
+            heroDefinitions: heroes,
+            enemyDefinitions: enemies,
+            skillDefinitions: skills,
+          );
+
+          // Weaken wave 1 enemy so swap kills it
+          controller.currentEnemy!.takeDamage(99);
+
+          final moves = LegalMoveFinder.findLegalMoves(board);
+          controller.attemptSwap(moves.first);
+
+          expect(controller.remainingTurns, equals(0));
+          // Wave 1 cleared, but wave 2 remains and turns <= 0 -> defeat
+          expect(
+            controller.lastCombatEvents.whereType<CombatWaveCleared>(),
+            isNotEmpty,
+          );
+          expect(controller.currentPhase, equals(BattlePhase.defeat));
+          expect(
+            controller.lastCombatEvents.whereType<CombatDefeated>(),
+            isNotEmpty,
+          );
+        },
+      );
+
+      test(
+        'Edge 4: enemy surviving last turn yields defeat',
+        () {
+          const surviveStage = StageDefinition(
+            id: 'stage_last_turn_survive',
+            displayNameKey: 'Last Turn Survive',
+            turnLimit: 1,
+            waves: [
+              StageWaveDefinition(
+                waveNumber: 1,
+                enemyIds: ['enemy_boss'], // 200 hp, won't die from 1 swap
+              ),
+            ],
+          );
+
+          final rng = SeededRandom(42);
+          final board = BoardGenerator.generate(rng);
+          final controller = BattleSessionController(
+            initialBoard: board,
+            randomService: rng,
+            stage: surviveStage,
+            heroDefinitions: heroes,
+            enemyDefinitions: enemies,
+            skillDefinitions: skills,
+          );
+
+          final moves = LegalMoveFinder.findLegalMoves(board);
+          controller.attemptSwap(moves.first);
+
+          expect(controller.remainingTurns, equals(0));
+          expect(controller.currentEnemy!.isAlive, isTrue);
+          expect(controller.currentPhase, equals(BattlePhase.defeat));
+          expect(
+            controller.lastCombatEvents.whereType<CombatDefeated>(),
+            isNotEmpty,
+          );
+        },
+      );
+    });
   });
 }

@@ -74,6 +74,7 @@ class BattleSessionController {
   late final List<HeroRuntime> _heroes;
   EnemyRuntime? _currentEnemy;
   int _currentWaveIndex = 0;
+  int _currentEnemyIndexInWave = 0;
   int _remainingTurns = 30;
   int _totalScore = 0;
   BattlePhase _currentPhase = BattlePhase.setup;
@@ -97,6 +98,9 @@ class BattleSessionController {
   /// Current 1-based wave number.
   int get currentWaveNumber => _currentWaveIndex + 1;
 
+  /// Current 0-based enemy index within the active wave.
+  int get currentEnemyIndexInWave => _currentEnemyIndexInWave;
+
   /// Total waves defined in the current stage.
   int get totalWaves => _stage?.waves.length ?? 1;
 
@@ -116,15 +120,16 @@ class BattleSessionController {
   @visibleForTesting
   int get nextTileId => _nextTileId;
 
-  void _loadWave(int waveIndex) {
+  void _loadWave(int waveIndex, [int enemyIndex = 0]) {
     if (_stage == null || _enemyDefinitions == null) return;
     if (waveIndex >= _stage.waves.length) return;
 
     _currentWaveIndex = waveIndex;
+    _currentEnemyIndexInWave = enemyIndex;
     final wave = _stage.waves[waveIndex];
-    if (wave.enemyIds.isEmpty) return;
+    if (wave.enemyIds.isEmpty || enemyIndex >= wave.enemyIds.length) return;
 
-    final enemyId = wave.enemyIds.first;
+    final enemyId = wave.enemyIds[enemyIndex];
     final enemyDef = _enemyDefinitions.firstWhere(
       (e) => e.id == enemyId,
       orElse: () => _enemyDefinitions.first,
@@ -177,24 +182,7 @@ class BattleSessionController {
 
     // 2. Check if active enemy was defeated
     if (!_currentEnemy!.isAlive) {
-      events.add(CombatWaveCleared(waveNumber: currentWaveNumber));
-      _totalScore += 500;
-
-      if (_currentWaveIndex + 1 < totalWaves) {
-        _loadWave(_currentWaveIndex + 1);
-        events.add(
-          CombatWaveStarted(
-            waveNumber: currentWaveNumber,
-            totalWaves: totalWaves,
-            enemy: _currentEnemy!,
-          ),
-        );
-        _currentPhase = BattlePhase.playerInput;
-      } else {
-        // All waves cleared -> Victory!
-        _currentPhase = BattlePhase.victory;
-        events.add(CombatVictorious(finalScore: _totalScore));
-      }
+      _handleEnemyDeath(events);
     } else {
       // 3. Enemy counter turn
       _currentPhase = BattlePhase.enemyTurn;
@@ -219,6 +207,55 @@ class BattleSessionController {
 
     _lastCombatEvents = List.unmodifiable(events);
     _onStateChanged?.call();
+  }
+
+  void _handleEnemyDeath(List<CombatEvent> events) {
+    if (_stage == null) return;
+    final currentWave = _stage.waves[_currentWaveIndex];
+
+    if (_currentEnemyIndexInWave + 1 < currentWave.enemyIds.length) {
+      // Advance to next enemy in the same wave without awarding wave clear score
+      _loadWave(_currentWaveIndex, _currentEnemyIndexInWave + 1);
+      events.add(
+        CombatWaveStarted(
+          waveNumber: currentWaveNumber,
+          totalWaves: totalWaves,
+          enemy: _currentEnemy!,
+        ),
+      );
+      if (_remainingTurns <= 0) {
+        _currentPhase = BattlePhase.defeat;
+        events.add(const CombatDefeated(reason: 'Hết lượt đi'));
+      } else {
+        _currentPhase = BattlePhase.playerInput;
+      }
+    } else {
+      // All enemies in the active wave are defeated
+      events.add(CombatWaveCleared(waveNumber: currentWaveNumber));
+      _totalScore += 500;
+
+      if (_currentWaveIndex + 1 < totalWaves) {
+        // More waves remain
+        if (_remainingTurns <= 0) {
+          _currentPhase = BattlePhase.defeat;
+          events.add(const CombatDefeated(reason: 'Hết lượt đi'));
+        } else {
+          _loadWave(_currentWaveIndex + 1);
+          events.add(
+            CombatWaveStarted(
+              waveNumber: currentWaveNumber,
+              totalWaves: totalWaves,
+              enemy: _currentEnemy!,
+            ),
+          );
+          _currentPhase = BattlePhase.playerInput;
+        }
+      } else {
+        // All waves cleared -> Victory!
+        _currentPhase = BattlePhase.victory;
+        events.add(CombatVictorious(finalScore: _totalScore));
+      }
+    }
   }
 
   /// Whether the hero with [heroId] is alive and has sufficient mana to cast skill.
@@ -254,23 +291,7 @@ class BattleSessionController {
     events.addAll(skillEvents);
 
     if (!_currentEnemy!.isAlive) {
-      events.add(CombatWaveCleared(waveNumber: currentWaveNumber));
-      _totalScore += 500;
-
-      if (_currentWaveIndex + 1 < totalWaves) {
-        _loadWave(_currentWaveIndex + 1);
-        events.add(
-          CombatWaveStarted(
-            waveNumber: currentWaveNumber,
-            totalWaves: totalWaves,
-            enemy: _currentEnemy!,
-          ),
-        );
-        _currentPhase = BattlePhase.playerInput;
-      } else {
-        _currentPhase = BattlePhase.victory;
-        events.add(CombatVictorious(finalScore: _totalScore));
-      }
+      _handleEnemyDeath(events);
     }
 
     _lastCombatEvents = List.unmodifiable(events);
