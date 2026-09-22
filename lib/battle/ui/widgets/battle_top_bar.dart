@@ -33,22 +33,27 @@ class BattleTopBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // 1. Stage title and wave badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.65),
-              borderRadius: GameRadius.borderSm,
-              border: Border.all(color: Colors.white24),
-            ),
-            child: Text(
-              waveText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.65),
+                borderRadius: GameRadius.borderSm,
+                border: Border.all(color: Colors.white24),
+              ),
+              child: Text(
+                waveText,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
+          const SizedBox(width: 8),
 
           // 2. Remaining turns badge
           Container(

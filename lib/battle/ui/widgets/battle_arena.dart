@@ -112,7 +112,7 @@ class _BattleArenaState extends State<BattleArena>
                 right: 20,
                 bottom: 8 + (3.5 - bobY),
                 child: KeyedSubtree(
-                  key: const Key('arena_enemy_sprite'),
+                  key: const Key('arena_enemy'),
                   child: SizedBox(
                     width: isBoss ? 130 : 110,
                     height: isBoss ? 140 : 130,

@@ -19,14 +19,14 @@ class Match3BoardViewport extends StatelessWidget {
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;
         final availableHeight = constraints.maxHeight;
-        final dimension =
-            (availableWidth < availableHeight
-                    ? availableWidth
-                    : availableHeight)
-                .clamp(280.0, 440.0);
+        final available = availableWidth < availableHeight
+            ? availableWidth
+            : availableHeight;
+        final dimension = available.clamp(0.0, 440.0);
 
         return Center(
           child: SizedBox(
+            key: const Key('match3_board_viewport'),
             width: dimension,
             height: dimension,
             child: AspectRatio(
