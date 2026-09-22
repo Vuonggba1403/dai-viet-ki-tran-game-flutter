@@ -61,4 +61,12 @@ abstract final class BattleAssetCatalog {
       _ => stageTitleKey,
     };
   }
+
+  /// Banner image path for victory overlay.
+  static String get victoryBannerPath =>
+      Assets.images.game.ui.battle.victoryBanner.path;
+
+  /// Banner image path for defeat overlay.
+  static String get defeatBannerPath =>
+      Assets.images.game.ui.battle.defeatBanner.path;
 }

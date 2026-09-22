@@ -8,8 +8,10 @@ import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_effect.dart
 import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_state.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/game/match3_battle_game.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/overlays/battle_hud.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/overlays/defeat_overlay.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/overlays/hero_team_row.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/overlays/pause_overlay.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/overlays/victory_overlay.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/widgets/battle_arena.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/widgets/battle_background.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/widgets/match3_board_viewport.dart';
@@ -323,85 +325,14 @@ class _BattlePageViewState extends State<_BattlePageView> {
     _game?.pauseBattle();
     final cubit = context.read<BattleSessionCubit>();
 
-    return Center(
-      child: Container(
-        key: const Key('victory_view'),
-        margin: const EdgeInsets.all(24),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E242B),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.amberAccent, width: 2),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black54,
-              blurRadius: 16,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.emoji_events_rounded,
-              color: Colors.amberAccent,
-              size: 64,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'CHIẾN THẮNG!',
-              style: TextStyle(
-                color: Colors.amberAccent,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              stage.displayNameKey,
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Điểm: $score',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                key: const Key('victory_retry_button'),
-                onPressed: () {
-                  _game = null;
-                  cubit.retryBattle();
-                },
-                icon: const Icon(Icons.replay_rounded),
-                label: const Text('Chơi lại'),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                key: const Key('victory_exit_button'),
-                onPressed: cubit.exitBattle,
-                icon: const Icon(Icons.home_outlined),
-                label: const Text('Về trang chủ'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white70,
-                  side: const BorderSide(color: Colors.white24),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return VictoryOverlay(
+      stage: stage,
+      score: score,
+      onRetry: () {
+        _game = null;
+        cubit.retryBattle();
+      },
+      onExit: cubit.exitBattle,
     );
   }
 
@@ -412,76 +343,13 @@ class _BattlePageViewState extends State<_BattlePageView> {
     _game?.pauseBattle();
     final cubit = context.read<BattleSessionCubit>();
 
-    return Center(
-      child: Container(
-        key: const Key('defeat_view'),
-        margin: const EdgeInsets.all(24),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E242B),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.redAccent, width: 2),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black54,
-              blurRadius: 16,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.heart_broken_rounded,
-              color: Colors.redAccent,
-              size: 64,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'THẤT BẠI',
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              stage.displayNameKey,
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                key: const Key('defeat_retry_button'),
-                onPressed: () {
-                  _game = null;
-                  cubit.retryBattle();
-                },
-                icon: const Icon(Icons.replay_rounded),
-                label: const Text('Thử lại'),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                key: const Key('defeat_exit_button'),
-                onPressed: cubit.exitBattle,
-                icon: const Icon(Icons.home_outlined),
-                label: const Text('Về trang chủ'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white70,
-                  side: const BorderSide(color: Colors.white24),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return DefeatOverlay(
+      stage: stage,
+      onRetry: () {
+        _game = null;
+        cubit.retryBattle();
+      },
+      onExit: cubit.exitBattle,
     );
   }
 }
