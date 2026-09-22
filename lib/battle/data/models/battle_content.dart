@@ -1,8 +1,8 @@
-import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
-import 'package:ezwork/battle/data/models/enemy_definition.dart';
-import 'package:ezwork/battle/data/models/hero_definition.dart';
-import 'package:ezwork/battle/data/models/skill_definition.dart';
-import 'package:ezwork/battle/data/models/stage_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/battle_balance_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/enemy_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/hero_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/skill_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/stage_definition.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'battle_content.freezed.dart';

@@ -1,13 +1,13 @@
-import 'package:ezwork/battle/domain/battle_session_controller.dart';
-import 'package:ezwork/battle/domain/board/board.dart';
-import 'package:ezwork/battle/domain/board/board_generator.dart';
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/board_resolver.dart';
-import 'package:ezwork/battle/domain/board/legal_move_finder.dart';
-import 'package:ezwork/battle/domain/board/swap.dart';
-import 'package:ezwork/battle/domain/random/seeded_random.dart';
-import 'package:ezwork/battle/ui/game/battle_game_config.dart';
-import 'package:ezwork/battle/ui/game/match3_battle_game.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/battle_session_controller.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_generator.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_resolver.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/legal_move_finder.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/swap.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/seeded_random.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/game/battle_game_config.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/game/match3_battle_game.dart';
 import 'package:flame/components.dart';
 import 'package:flutter_test/flutter_test.dart' hide MatchFinder;
 

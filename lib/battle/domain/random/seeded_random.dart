@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'package:ezwork/battle/domain/random/random_service.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/random_service.dart';
 
 /// Deterministic [RandomService] implementation wrapping [math.Random].
 class SeededRandom implements RandomService {

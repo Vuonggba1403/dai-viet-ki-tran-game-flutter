@@ -1,8 +1,8 @@
-import 'package:ezwork/battle/domain/board/board.dart';
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/match_finder.dart';
-import 'package:ezwork/battle/domain/board/special_tile_type.dart';
-import 'package:ezwork/battle/domain/board/swap.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/match_finder.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/special_tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/swap.dart';
 
 /// Finds possible valid swaps on a [Board] that produce matches.
 class LegalMoveFinder {

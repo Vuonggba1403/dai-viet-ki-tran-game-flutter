@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.mywo" "\0"
+            VALUE "CompanyName", "Dai Viet Ki Tran" "\0"
             VALUE "FileDescription", "{{packageName}}" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "{{packageName}}" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.mywo. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Dai Viet Ki Tran. All rights reserved." "\0"
             VALUE "OriginalFilename", "{{packageName}}.exe" "\0"
-            VALUE "ProductName", "EzWo" "\0"
+            VALUE "ProductName", "Dai Viet Ki Tran" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,12 +1,12 @@
 import 'package:bloc_effects/bloc_effects.dart';
-import 'package:ezwork/battle/data/models/stage_definition.dart';
-import 'package:ezwork/battle/data/repositories/battle_content_repository.dart';
-import 'package:ezwork/battle/domain/battle_session_controller.dart';
-import 'package:ezwork/battle/domain/board/board_generator.dart';
-import 'package:ezwork/battle/domain/combat/battle_phase.dart';
-import 'package:ezwork/battle/domain/random/seeded_random.dart';
-import 'package:ezwork/battle/ui/cubit/battle_session_effect.dart';
-import 'package:ezwork/battle/ui/cubit/battle_session_state.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/stage_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/repositories/battle_content_repository.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/battle_session_controller.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_generator.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/battle_phase.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/seeded_random.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_effect.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_state.dart';
 import 'package:logging/logging.dart';
 
 /// Cubit managing stable battle screen states and one-shot effects.

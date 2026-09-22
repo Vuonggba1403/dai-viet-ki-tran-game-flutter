@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:ezwork/battle/domain/board/special_tile_type.dart';
-import 'package:ezwork/battle/domain/board/tile.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/special_tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';

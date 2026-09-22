@@ -1,7 +1,7 @@
 // Remove json serialization warning
 // ignore_for_file: invalid_annotation_target
 
-import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'skill_definition.freezed.dart';

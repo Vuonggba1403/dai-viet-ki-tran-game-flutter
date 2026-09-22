@@ -1,5 +1,5 @@
-name: ezwork
-description: Easy Work
+name: dai_viet_ki_tran_game
+description: Dai Viet Ki Tran match-3 RPG.
 version: 0.0.1+1
 publish_to: none
 
@@ -8,44 +8,29 @@ environment:
   flutter: ">=3.38.0 <4.0.0"
 
 dependencies:
-  async: ^2.12.0
   bloc: ^9.0.0
   bloc_effects: ^2.0.1
-  cupertino_icons: ^1.0.8
-  device_info_plus: ^12.0.0
-  dio: ^5.7.0
   flame: 1.35.1
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.0
-  flutter_svg: ^2.1.0
   freezed_annotation: ^3.0.0
   get_it: ^9.2.1
   go_router: ^17.1.0
-  intl: ^0.20.2
   json_annotation: ^4.9.0
   logging: ^1.3.0
-  lottie: ^3.1.2
   meta: ^1.16.0
-  pretty_dio_logger: ^1.4.0
-  retrofit: ^4.9.2
-  rxdart: ^0.28.0
-  shared_preferences: ^2.3.2
 
 dev_dependencies:
   analyzer: ^8.4.1
   bloc_test: ^10.0.0
   build_runner: ^2.12.2
-  build_verify: ^3.1.0
   flame_test: 2.2.2
   flutter_gen_runner: ^5.5.0+1
   flutter_test:
     sdk: flutter
   freezed: ^3.2.3
   json_serializable: ^6.9.5
-  mockito: ^5.4.6
-  mocktail: ^1.0.3
-  retrofit_generator: ^10.2.0
   very_good_analysis: ^10.1.0
 
 flutter:

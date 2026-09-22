@@ -1,15 +1,15 @@
-import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
-import 'package:ezwork/battle/data/models/enemy_definition.dart';
-import 'package:ezwork/battle/data/models/hero_definition.dart';
-import 'package:ezwork/battle/data/models/skill_definition.dart';
-import 'package:ezwork/battle/domain/board/board_event.dart';
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/match_group.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/domain/combat/combat_event.dart';
-import 'package:ezwork/battle/domain/combat/combat_resolver.dart';
-import 'package:ezwork/battle/domain/combat/enemy_runtime.dart';
-import 'package:ezwork/battle/domain/combat/hero_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/battle_balance_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/enemy_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/hero_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/skill_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_event.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/match_group.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/combat_event.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/combat_resolver.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/enemy_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/hero_runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

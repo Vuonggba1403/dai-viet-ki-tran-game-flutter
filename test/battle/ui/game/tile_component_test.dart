@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:ezwork/battle/domain/board/special_tile_type.dart';
-import 'package:ezwork/battle/domain/board/tile.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/ui/game/components/tile_component.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/special_tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/game/components/tile_component.dart';
 import 'package:flame/components.dart';
 import 'package:flutter_test/flutter_test.dart' hide MatchFinder;
 

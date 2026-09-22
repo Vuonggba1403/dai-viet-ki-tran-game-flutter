@@ -1,4 +1,6 @@
-import 'package:ezwork/app/app.dart';
+import 'package:dai_viet_ki_tran_game/app/design_system/colors.dart';
+import 'package:dai_viet_ki_tran_game/app/design_system/spacing.dart';
+import 'package:dai_viet_ki_tran_game/app/design_system/typography.dart';
 
 /// define custom themes here
 import 'package:flutter/material.dart';
@@ -8,67 +10,67 @@ final ThemeData appTheme =
       useMaterial3: true,
       colorScheme: const ColorScheme(
         brightness: Brightness.light,
-        primary: EzWorkColors.lightPrimary,
-        onPrimary: EzWorkColors.lightOnPrimary,
-        primaryContainer: EzWorkColors.lightPrimaryContainer,
-        onPrimaryContainer: EzWorkColors.lightOnPrimaryContainer,
-        primaryFixed: EzWorkColors.lightPrimaryFixed,
-        primaryFixedDim: EzWorkColors.lightPrimaryFixedDim,
-        onPrimaryFixed: EzWorkColors.lightOnPrimaryFixed,
-        onPrimaryFixedVariant: EzWorkColors.lightOnPrimaryFixedVariant,
-        secondary: EzWorkColors.lightSecondary,
-        onSecondary: EzWorkColors.lightOnSecondary,
-        secondaryContainer: EzWorkColors.lightSecondaryContainer,
-        onSecondaryContainer: EzWorkColors.lightOnSecondaryContainer,
-        secondaryFixed: EzWorkColors.lightSecondaryFixed,
-        secondaryFixedDim: EzWorkColors.lightSecondaryFixedDim,
-        onSecondaryFixed: EzWorkColors.lightOnSecondaryFixed,
-        onSecondaryFixedVariant: EzWorkColors.lightOnSecondaryFixedVariant,
-        tertiary: EzWorkColors.lightTertiary,
-        onTertiary: EzWorkColors.lightOnTertiary,
-        tertiaryContainer: EzWorkColors.lightTertiaryContainer,
-        onTertiaryContainer: EzWorkColors.lightOnTertiaryContainer,
-        tertiaryFixed: EzWorkColors.lightTertiaryFixed,
-        tertiaryFixedDim: EzWorkColors.lightTertiaryFixedDim,
-        onTertiaryFixed: EzWorkColors.lightOnTertiaryFixed,
-        onTertiaryFixedVariant: EzWorkColors.lightOnTertiaryFixedVariant,
-        error: EzWorkColors.lightError,
-        onError: EzWorkColors.lightOnError,
-        errorContainer: EzWorkColors.lightErrorContainer,
-        onErrorContainer: EzWorkColors.lightOnErrorContainer,
-        surface: EzWorkColors.lightSurface,
-        onSurface: EzWorkColors.lightOnSurface,
-        surfaceDim: EzWorkColors.lightSurfaceDim,
-        surfaceBright: EzWorkColors.lightSurfaceBright,
-        surfaceContainerLowest: EzWorkColors.lightSurfaceContainerLowest,
-        surfaceContainerLow: EzWorkColors.lightSurfaceContainerLow,
-        surfaceContainer: EzWorkColors.lightSurfaceContainer,
-        surfaceContainerHigh: EzWorkColors.lightSurfaceContainerHigh,
-        surfaceContainerHighest: EzWorkColors.lightSurfaceContainerHighest,
-        onSurfaceVariant: EzWorkColors.lightOnSurfaceVariant,
-        outline: EzWorkColors.lightOutline,
-        outlineVariant: EzWorkColors.lightOutlineVariant,
-        shadow: EzWorkColors.lightShadow,
-        scrim: EzWorkColors.lightScrim,
-        inverseSurface: EzWorkColors.lightInverseSurface,
-        onInverseSurface: EzWorkColors.lightInverseOnSurface,
-        inversePrimary: EzWorkColors.lightInversePrimary,
-        surfaceTint: EzWorkColors.lightPrimary,
+        primary: GameColors.lightPrimary,
+        onPrimary: GameColors.lightOnPrimary,
+        primaryContainer: GameColors.lightPrimaryContainer,
+        onPrimaryContainer: GameColors.lightOnPrimaryContainer,
+        primaryFixed: GameColors.lightPrimaryFixed,
+        primaryFixedDim: GameColors.lightPrimaryFixedDim,
+        onPrimaryFixed: GameColors.lightOnPrimaryFixed,
+        onPrimaryFixedVariant: GameColors.lightOnPrimaryFixedVariant,
+        secondary: GameColors.lightSecondary,
+        onSecondary: GameColors.lightOnSecondary,
+        secondaryContainer: GameColors.lightSecondaryContainer,
+        onSecondaryContainer: GameColors.lightOnSecondaryContainer,
+        secondaryFixed: GameColors.lightSecondaryFixed,
+        secondaryFixedDim: GameColors.lightSecondaryFixedDim,
+        onSecondaryFixed: GameColors.lightOnSecondaryFixed,
+        onSecondaryFixedVariant: GameColors.lightOnSecondaryFixedVariant,
+        tertiary: GameColors.lightTertiary,
+        onTertiary: GameColors.lightOnTertiary,
+        tertiaryContainer: GameColors.lightTertiaryContainer,
+        onTertiaryContainer: GameColors.lightOnTertiaryContainer,
+        tertiaryFixed: GameColors.lightTertiaryFixed,
+        tertiaryFixedDim: GameColors.lightTertiaryFixedDim,
+        onTertiaryFixed: GameColors.lightOnTertiaryFixed,
+        onTertiaryFixedVariant: GameColors.lightOnTertiaryFixedVariant,
+        error: GameColors.lightError,
+        onError: GameColors.lightOnError,
+        errorContainer: GameColors.lightErrorContainer,
+        onErrorContainer: GameColors.lightOnErrorContainer,
+        surface: GameColors.lightSurface,
+        onSurface: GameColors.lightOnSurface,
+        surfaceDim: GameColors.lightSurfaceDim,
+        surfaceBright: GameColors.lightSurfaceBright,
+        surfaceContainerLowest: GameColors.lightSurfaceContainerLowest,
+        surfaceContainerLow: GameColors.lightSurfaceContainerLow,
+        surfaceContainer: GameColors.lightSurfaceContainer,
+        surfaceContainerHigh: GameColors.lightSurfaceContainerHigh,
+        surfaceContainerHighest: GameColors.lightSurfaceContainerHighest,
+        onSurfaceVariant: GameColors.lightOnSurfaceVariant,
+        outline: GameColors.lightOutline,
+        outlineVariant: GameColors.lightOutlineVariant,
+        shadow: GameColors.lightShadow,
+        scrim: GameColors.lightScrim,
+        inverseSurface: GameColors.lightInverseSurface,
+        onInverseSurface: GameColors.lightInverseOnSurface,
+        inversePrimary: GameColors.lightInversePrimary,
+        surfaceTint: GameColors.lightPrimary,
       ),
-      textTheme: ezworkTextTheme,
+      textTheme: gameTextTheme,
     ).copyWith(
-      highlightColor: EzWorkColors.lightPrimary.withValues(alpha: 0.2),
-      splashColor: EzWorkColors.lightPrimary.withValues(alpha: 0.2),
+      highlightColor: GameColors.lightPrimary.withValues(alpha: 0.2),
+      splashColor: GameColors.lightPrimary.withValues(alpha: 0.2),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: EzWorkColors.lightPrimary,
+        backgroundColor: GameColors.lightPrimary,
         indicatorColor: Colors.white.withValues(alpha: 0.5),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        errorStyle: ezworkTextTheme.bodySmall?.copyWith(
-          color: EzWorkColors.lightError,
+        errorStyle: gameTextTheme.bodySmall?.copyWith(
+          color: GameColors.lightError,
         ),
       ),
       // For filledButtonTheme, statedButtonTheme, textButtonTheme
@@ -78,37 +80,37 @@ final ThemeData appTheme =
           backgroundColor: WidgetStateProperty.resolveWith<Color?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.disabled)) {
-                return EzWorkColors.green[10];
+                return GameColors.green[10];
               }
               if (states.contains(WidgetState.pressed)) {
-                return EzWorkColors.lightPrimary;
+                return GameColors.lightPrimary;
               }
-              return EzWorkColors.neutral[15];
+              return GameColors.neutral[15];
             },
           ),
           foregroundColor: WidgetStateProperty.resolveWith<Color?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.disabled)) {
-                return EzWorkColors.green;
+                return GameColors.green;
               }
-              return EzWorkColors.green[100];
+              return GameColors.green[100];
             },
           ),
           side: WidgetStateProperty.resolveWith<BorderSide?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.disabled)) {
                 return const BorderSide(
-                  color: EzWorkColors.lightPrimaryFixedDim,
+                  color: GameColors.lightPrimaryFixedDim,
                   width: 2,
                 );
               }
               if (states.contains(WidgetState.pressed)) {
                 return const BorderSide(
-                  color: EzWorkColors.lightPrimaryFixedDim,
+                  color: GameColors.lightPrimaryFixedDim,
                   width: 2,
                 );
               }
-              return BorderSide(color: EzWorkColors.neutral[15]!, width: 2);
+              return BorderSide(color: GameColors.neutral[15]!, width: 2);
             },
           ),
         ),
@@ -118,38 +120,38 @@ final ThemeData appTheme =
           backgroundColor: WidgetStateProperty.resolveWith<Color?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.disabled)) {
-                return EzWorkColors.green[98];
+                return GameColors.green[98];
               }
               if (states.contains(WidgetState.pressed)) {
-                return EzWorkColors.green[98];
+                return GameColors.green[98];
               }
-              return EzWorkColors.green[100];
+              return GameColors.green[100];
             },
           ),
           foregroundColor: WidgetStateProperty.resolveWith<Color?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.disabled)) {
-                return EzWorkColors.neutral[80];
+                return GameColors.neutral[80];
               }
               if (states.contains(WidgetState.pressed)) {
-                return EzWorkColors.green;
+                return GameColors.green;
               }
-              return EzWorkColors.neutral[15];
+              return GameColors.neutral[15];
             },
           ),
           side: WidgetStateProperty.resolveWith<BorderSide?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.disabled)) {
                 return const BorderSide(
-                  color: EzWorkColors.lightOutlineVariant,
+                  color: GameColors.lightOutlineVariant,
                   width: 2,
                 );
               }
               if (states.contains(WidgetState.pressed)) {
-                return BorderSide(color: EzWorkColors.green[70]!, width: 2);
+                return BorderSide(color: GameColors.green[70]!, width: 2);
               }
               return const BorderSide(
-                color: EzWorkColors.lightOutline,
+                color: GameColors.lightOutline,
                 width: 2,
               );
             },
@@ -159,14 +161,14 @@ final ThemeData appTheme =
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-            const EdgeInsets.symmetric(horizontal: EzWorkSpacing.normal),
+            const EdgeInsets.symmetric(horizontal: GameSpacing.normal),
           ),
           foregroundColor: WidgetStateProperty.resolveWith<Color?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.pressed)) {
-                return EzWorkColors.lightPrimary;
+                return GameColors.lightPrimary;
               }
-              return EzWorkColors.lightOnTertiaryFixedVariant;
+              return GameColors.lightOnTertiaryFixedVariant;
             },
           ),
         ),

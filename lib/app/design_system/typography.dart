@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const ezworkTextTheme = TextTheme(
+const gameTextTheme = TextTheme(
   // Ignore this line
   //displayXLarge: TextStyle(fontSize: 64, fontFamily: '', fontWeight: FontWeight.w700),
   displayLarge: TextStyle(

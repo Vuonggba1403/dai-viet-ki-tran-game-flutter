@@ -1,4 +1,4 @@
-import 'package:ezwork/battle/domain/combat/enemy_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/enemy_runtime.dart';
 import 'package:flutter/material.dart';
 
 /// Top overlay HUD displaying current stage title, remaining turns,

@@ -1,8 +1,8 @@
-import 'package:ezwork/battle/domain/board/board.dart';
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/match_group.dart';
-import 'package:ezwork/battle/domain/board/special_tile_type.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/match_group.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/special_tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 
 class _RawRun {
   const _RawRun({

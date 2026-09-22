@@ -1,8 +1,8 @@
-import 'package:ezwork/battle/domain/board/board_event.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/ui/game/battle_game_config.dart';
-import 'package:ezwork/battle/ui/game/components/board_component.dart';
-import 'package:ezwork/battle/ui/game/components/tile_component.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_event.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/game/battle_game_config.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/game/components/board_component.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/game/components/tile_component.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 

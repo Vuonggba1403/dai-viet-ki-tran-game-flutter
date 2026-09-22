@@ -1,6 +1,6 @@
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/special_tile_type.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/special_tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 import 'package:meta/meta.dart';
 
 /// Represents a validated group of matched tiles of identical [TileType].

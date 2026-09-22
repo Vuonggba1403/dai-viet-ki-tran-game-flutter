@@ -1,11 +1,11 @@
 {
-    "name": "EzWo",
-    "short_name": "EzWo",
+    "name": "Dai Viet Ki Tran",
+    "short_name": "Dai Viet Ki Tran",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "{{description}}",
+    "description": "Vietnamese historical match-3 RPG",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

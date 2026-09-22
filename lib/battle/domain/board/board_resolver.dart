@@ -1,15 +1,15 @@
-import 'package:ezwork/battle/domain/board/board.dart';
-import 'package:ezwork/battle/domain/board/board_event.dart';
-import 'package:ezwork/battle/domain/board/board_generator.dart';
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/legal_move_finder.dart';
-import 'package:ezwork/battle/domain/board/match_finder.dart';
-import 'package:ezwork/battle/domain/board/match_group.dart';
-import 'package:ezwork/battle/domain/board/special_tile_type.dart';
-import 'package:ezwork/battle/domain/board/swap.dart';
-import 'package:ezwork/battle/domain/board/tile.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/domain/random/random_service.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_event.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_generator.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/legal_move_finder.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/match_finder.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/match_group.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/special_tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/swap.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/random_service.dart';
 import 'package:meta/meta.dart';
 
 class _PowerGemResolution {

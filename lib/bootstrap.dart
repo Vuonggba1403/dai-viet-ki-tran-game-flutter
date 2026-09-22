@@ -61,7 +61,13 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
 
       runApp(await builder());
     },
-    (exception, stackTrace) async {},
+    (exception, stackTrace) {
+      Logger('Bootstrap').severe(
+        'Unhandled application error',
+        exception,
+        stackTrace,
+      );
+    },
     zoneSpecification: ZoneSpecification(
       print: (self, parent, zone, line) {
         // Suppressing prints in release builds

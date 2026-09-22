@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class EzWorkColors {
-  EzWorkColors._();
+class GameColors {
+  GameColors._();
   static const int _primaryValue = 0xFF4B662C;
   static const int _secondaryValue = 0xFF8A5021;
   static const int _tertiaryValue = 0xFF505B92;

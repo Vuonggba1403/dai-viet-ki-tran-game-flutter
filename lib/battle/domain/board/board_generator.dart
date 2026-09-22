@@ -1,8 +1,8 @@
-import 'package:ezwork/battle/domain/board/board.dart';
-import 'package:ezwork/battle/domain/board/legal_move_finder.dart';
-import 'package:ezwork/battle/domain/board/tile.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/domain/random/random_service.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/legal_move_finder.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/random_service.dart';
 
 /// Generates valid 7x7 Match-3 boards with no pre-existing matches
 /// and at least one legal move.

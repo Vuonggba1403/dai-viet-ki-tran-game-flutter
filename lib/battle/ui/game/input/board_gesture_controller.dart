@@ -1,6 +1,6 @@
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/swap.dart';
-import 'package:ezwork/battle/ui/game/components/board_component.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/swap.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/game/components/board_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 

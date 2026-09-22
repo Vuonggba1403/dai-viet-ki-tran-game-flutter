@@ -1,5 +1,5 @@
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/tile.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile.dart';
 import 'package:meta/meta.dart';
 
 /// Represents the immutable 7x7 Match-3 board state.

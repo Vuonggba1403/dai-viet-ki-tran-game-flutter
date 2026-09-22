@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:ezwork/assets_gen/assets.gen.dart';
+import 'package:dai_viet_ki_tran_game/assets_gen/assets.gen.dart';
 import 'package:flutter/services.dart';
 
 /// Loads raw JSON content files using typed [Assets.gameData] paths.

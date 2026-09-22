@@ -1,5 +1,5 @@
-import 'package:ezwork/battle/domain/board/special_tile_type.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/special_tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 import 'package:meta/meta.dart';
 
 /// Represents an immutable tile on the Match-3 board.

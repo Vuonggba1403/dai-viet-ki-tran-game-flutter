@@ -1,6 +1,6 @@
-import 'package:ezwork/battle/data/models/enemy_definition.dart';
-import 'package:ezwork/battle/domain/combat/enemy_runtime.dart';
-import 'package:ezwork/battle/ui/overlays/battle_hud.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/enemy_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/enemy_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/overlays/battle_hud.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

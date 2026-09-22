@@ -1,6 +1,6 @@
-import 'package:ezwork/battle/data/data_sources/local_battle_content_data_source.dart';
-import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
-import 'package:ezwork/battle/data/repositories/battle_content_repository.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/data_sources/local_battle_content_data_source.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/battle_balance_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/repositories/battle_content_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeDataSource implements LocalBattleContentDataSource {

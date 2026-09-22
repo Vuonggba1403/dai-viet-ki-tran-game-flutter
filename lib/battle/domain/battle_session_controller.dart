@@ -1,17 +1,17 @@
-import 'package:ezwork/battle/data/models/battle_balance_definition.dart';
-import 'package:ezwork/battle/data/models/enemy_definition.dart';
-import 'package:ezwork/battle/data/models/hero_definition.dart';
-import 'package:ezwork/battle/data/models/skill_definition.dart';
-import 'package:ezwork/battle/data/models/stage_definition.dart';
-import 'package:ezwork/battle/domain/board/board.dart';
-import 'package:ezwork/battle/domain/board/board_resolver.dart';
-import 'package:ezwork/battle/domain/board/swap.dart';
-import 'package:ezwork/battle/domain/combat/battle_phase.dart';
-import 'package:ezwork/battle/domain/combat/combat_event.dart';
-import 'package:ezwork/battle/domain/combat/combat_resolver.dart';
-import 'package:ezwork/battle/domain/combat/enemy_runtime.dart';
-import 'package:ezwork/battle/domain/combat/hero_runtime.dart';
-import 'package:ezwork/battle/domain/random/random_service.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/battle_balance_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/enemy_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/hero_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/skill_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/stage_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_resolver.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/swap.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/battle_phase.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/combat_event.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/combat_resolver.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/enemy_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/hero_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/random_service.dart';
 import 'package:meta/meta.dart';
 
 /// Pure Dart controller that maintains runtime state for an active battle session's board

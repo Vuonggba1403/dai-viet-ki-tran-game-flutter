@@ -1,4 +1,4 @@
-class EzWorkSpacing {
+class GameSpacing {
   /// Spacing scale (in logical pixels)
   static const double spacing4 = 4;
   static const double spacing6 = 6;

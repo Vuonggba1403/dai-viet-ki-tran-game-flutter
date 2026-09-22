@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-import 'package:ezwork/battle/data/models/enemy_definition.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/domain/combat/combat_event.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/enemy_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/combat_event.dart';
 
 /// Runtime combat state of an active enemy.
 ///

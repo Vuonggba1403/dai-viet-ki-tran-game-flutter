@@ -1,4 +1,4 @@
-import 'package:ezwork/battle/domain/combat/hero_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/hero_runtime.dart';
 import 'package:flutter/material.dart';
 
 /// Bottom overlay widget displaying the active 4-hero combat team status.

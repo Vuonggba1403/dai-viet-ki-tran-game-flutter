@@ -1,14 +1,14 @@
-import 'package:ezwork/battle/data/models/enemy_definition.dart';
-import 'package:ezwork/battle/data/models/hero_definition.dart';
-import 'package:ezwork/battle/data/models/skill_definition.dart';
-import 'package:ezwork/battle/data/models/stage_definition.dart';
-import 'package:ezwork/battle/domain/battle_session_controller.dart';
-import 'package:ezwork/battle/domain/board/board_generator.dart';
-import 'package:ezwork/battle/domain/board/legal_move_finder.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/domain/combat/battle_phase.dart';
-import 'package:ezwork/battle/domain/combat/combat_event.dart';
-import 'package:ezwork/battle/domain/random/seeded_random.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/enemy_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/hero_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/skill_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/stage_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/battle_session_controller.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_generator.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/legal_move_finder.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/battle_phase.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/combat_event.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/seeded_random.dart';
 import 'package:flutter_test/flutter_test.dart' hide MatchFinder;
 
 void main() {

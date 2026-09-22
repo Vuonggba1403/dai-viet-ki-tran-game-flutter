@@ -1,7 +1,7 @@
-import 'package:ezwork/battle/data/models/hero_definition.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
-import 'package:ezwork/battle/domain/combat/hero_runtime.dart';
-import 'package:ezwork/battle/ui/overlays/hero_team_row.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/hero_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/hero_runtime.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/overlays/hero_team_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

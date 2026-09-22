@@ -1,6 +1,6 @@
-import 'package:ezwork/battle/data/models/battle_content.dart';
-import 'package:ezwork/battle/data/models/stage_definition.dart';
-import 'package:ezwork/battle/domain/battle_session_controller.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/battle_content.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/stage_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/battle_session_controller.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'battle_session_state.freezed.dart';

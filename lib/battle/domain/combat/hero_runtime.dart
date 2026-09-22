@@ -1,6 +1,6 @@
 import 'dart:math' as math;
-import 'package:ezwork/battle/data/models/hero_definition.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/data/models/hero_definition.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 
 /// Runtime combat state of an active hero in the player's 4-hero team.
 ///

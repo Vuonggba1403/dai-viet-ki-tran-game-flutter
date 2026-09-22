@@ -36,7 +36,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.mywo"
+    namespace "com.daivietkitran.game"
     compileSdkVersion 36
     ndkVersion flutter.ndkVersion
 
@@ -57,13 +57,13 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.smexapp"
+        applicationId "com.daivietkitran.game"
         minSdkVersion 24
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
+        resValue "string", "appName", "Dai Viet Ki Tran"
     }
 
     signingConfigs {
@@ -84,25 +84,6 @@ android {
         }
     }
 
-    flavorDimensions "default"
-    productFlavors {
-        production {
-            dimension "default"
-            applicationIdSuffix ""
-            resValue "string", "appName", "HeDa"
-        }
-        staging {
-            dimension "default"
-            applicationIdSuffix ".stg"
-            resValue "string", "appName", "[STG] HeDa"
-        }
-        development {
-            dimension "default"
-            applicationIdSuffix ".dev"
-            resValue "string", "appName", "[DEV] HeDa"
-        }
-    }
-
     buildTypes {
         release {
             signingConfig signingConfigs.release
@@ -120,7 +101,6 @@ flutter {
 }
 
 dependencies {
-    implementation "com.android.support:multidex:2.0.1"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
     implementation 'androidx.window:window:1.0.0'
     implementation 'androidx.window:window-java:1.0.0'

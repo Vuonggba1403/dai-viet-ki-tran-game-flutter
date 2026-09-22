@@ -1,7 +1,7 @@
-import 'package:ezwork/battle/domain/board/board.dart';
-import 'package:ezwork/battle/domain/board/board_position.dart';
-import 'package:ezwork/battle/domain/board/tile.dart';
-import 'package:ezwork/battle/domain/board/tile_type.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Board _createSampleBoard() {

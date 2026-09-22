@@ -1,4 +1,4 @@
-import 'package:ezwork/battle/domain/random/seeded_random.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/random/seeded_random.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
