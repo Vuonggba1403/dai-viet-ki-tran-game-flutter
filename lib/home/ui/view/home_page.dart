@@ -1,6 +1,7 @@
 import 'package:bloc_effects/bloc_effects.dart';
 import 'package:ezwork/app/di/dependencies.dart';
 import 'package:ezwork/auth/auth.dart';
+import 'package:ezwork/battle/battle.dart';
 import 'package:ezwork/home/ui/home_cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -115,8 +116,20 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        body: const Center(
-          child: Text('Welcome!'),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Welcome!'),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                key: const Key('enter_battle_button'),
+                onPressed: () => context.pushNamed(BattlePage.routeName),
+                icon: const Icon(Icons.sports_esports_rounded),
+                label: const Text('Vào Trận Đánh (Battle)'),
+              ),
+            ],
+          ),
         ),
       ),
     );

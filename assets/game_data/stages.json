@@ -1,0 +1,79 @@
+[
+  {
+    "id": "stage_1",
+    "display_name_key": "stage_1_name",
+    "turn_limit": 30,
+    "first_clear_reward": {
+      "gold": 100
+    },
+    "repeat_reward": {
+      "gold": 30
+    },
+    "waves": [
+      {
+        "wave_number": 1,
+        "enemy_ids": [
+          "bandit"
+        ]
+      }
+    ],
+    "tutorial_script": "tutorial_swap"
+  },
+  {
+    "id": "stage_2",
+    "display_name_key": "stage_2_name",
+    "turn_limit": 30,
+    "first_clear_reward": {
+      "gold": 200
+    },
+    "repeat_reward": {
+      "gold": 50
+    },
+    "waves": [
+      {
+        "wave_number": 1,
+        "enemy_ids": [
+          "bandit"
+        ]
+      },
+      {
+        "wave_number": 2,
+        "enemy_ids": [
+          "skeleton_archer"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "stage_3",
+    "display_name_key": "stage_3_name",
+    "turn_limit": 40,
+    "first_clear_reward": {
+      "gold": 500
+    },
+    "repeat_reward": {
+      "gold": 100
+    },
+    "waves": [
+      {
+        "wave_number": 1,
+        "enemy_ids": [
+          "bandit",
+          "skeleton_archer"
+        ]
+      },
+      {
+        "wave_number": 2,
+        "enemy_ids": [
+          "goblin_bomber"
+        ]
+      },
+      {
+        "wave_number": 3,
+        "enemy_ids": [
+          "necromancer"
+        ]
+      }
+    ]
+  }
+]

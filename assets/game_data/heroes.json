@@ -1,0 +1,58 @@
+[
+  {
+    "id": "dinh_bo_linh",
+    "name_key": "hero_dinh_bo_linh",
+    "element": "fire",
+    "hero_class": "commander",
+    "base_hp": 1200,
+    "base_attack": 150,
+    "base_defense": 80,
+    "max_mana": 100,
+    "starting_mana": 20,
+    "active_skill_id": "skill_hoa_long_quyet",
+    "asset_key": "heroes/assassin",
+    "placeholder_color": "#E53935"
+  },
+  {
+    "id": "nguyen_bac",
+    "name_key": "hero_nguyen_bac",
+    "element": "sword",
+    "hero_class": "warrior",
+    "base_hp": 1500,
+    "base_attack": 130,
+    "base_defense": 110,
+    "max_mana": 80,
+    "starting_mana": 0,
+    "active_skill_id": "skill_tram_long_kich",
+    "asset_key": "heroes/swordsman",
+    "placeholder_color": "#78909C"
+  },
+  {
+    "id": "dinh_dien",
+    "name_key": "hero_dinh_dien",
+    "element": "lightning",
+    "hero_class": "berserker",
+    "base_hp": 1100,
+    "base_attack": 170,
+    "base_defense": 70,
+    "max_mana": 90,
+    "starting_mana": 0,
+    "active_skill_id": "skill_loi_dinh_chuong",
+    "asset_key": "heroes/monk",
+    "placeholder_color": "#FDD835"
+  },
+  {
+    "id": "luu_co",
+    "name_key": "hero_luu_co",
+    "element": "water",
+    "hero_class": "strategist",
+    "base_hp": 1000,
+    "base_attack": 120,
+    "base_defense": 90,
+    "max_mana": 120,
+    "starting_mana": 30,
+    "active_skill_id": "skill_thuy_tran_thu",
+    "asset_key": "heroes/strategist",
+    "placeholder_color": "#1E88E5"
+  }
+]

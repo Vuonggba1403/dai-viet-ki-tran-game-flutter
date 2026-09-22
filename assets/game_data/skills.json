@@ -1,0 +1,58 @@
+[
+  {
+    "id": "skill_hoa_long_quyet",
+    "name_key": "skill_hoa_long_name",
+    "mana_cost": 50,
+    "target_type": "single_enemy",
+    "effects": [
+      {
+        "type": "damage",
+        "magnitude": 250,
+        "duration": 0,
+        "tile_type": "fire"
+      }
+    ]
+  },
+  {
+    "id": "skill_tram_long_kich",
+    "name_key": "skill_tram_long_name",
+    "mana_cost": 40,
+    "target_type": "single_enemy",
+    "effects": [
+      {
+        "type": "damage",
+        "magnitude": 200,
+        "duration": 0,
+        "tile_type": "sword"
+      }
+    ]
+  },
+  {
+    "id": "skill_loi_dinh_chuong",
+    "name_key": "skill_loi_dinh_name",
+    "mana_cost": 45,
+    "target_type": "all_enemies",
+    "effects": [
+      {
+        "type": "damage",
+        "magnitude": 150,
+        "duration": 0,
+        "tile_type": "lightning"
+      }
+    ]
+  },
+  {
+    "id": "skill_thuy_tran_thu",
+    "name_key": "skill_thuy_tran_name",
+    "mana_cost": 40,
+    "target_type": "all_allies",
+    "effects": [
+      {
+        "type": "heal",
+        "magnitude": 200,
+        "duration": 0,
+        "tile_type": "water"
+      }
+    ]
+  }
+]

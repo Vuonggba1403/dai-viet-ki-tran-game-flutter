@@ -1,0 +1,99 @@
+import 'dart:math' as math;
+
+import 'package:bloc_effects/bloc_effects.dart';
+import 'package:ezwork/battle/data/repositories/battle_content_repository.dart';
+import 'package:ezwork/battle/domain/battle_session_controller.dart';
+import 'package:ezwork/battle/domain/board/board_generator.dart';
+import 'package:ezwork/battle/domain/random/seeded_random.dart';
+import 'package:ezwork/battle/ui/cubit/battle_session_effect.dart';
+import 'package:ezwork/battle/ui/cubit/battle_session_state.dart';
+import 'package:logging/logging.dart';
+
+/// Cubit managing stable battle screen states and one-shot effects.
+class BattleSessionCubit
+    extends CubitWithEffects<BattleSessionState, BattleSessionEffect> {
+  BattleSessionCubit({
+    required BattleContentRepository contentRepository,
+    int? initialSeed,
+  })  : _contentRepository = contentRepository,
+        _seed = initialSeed ?? DateTime.now().millisecondsSinceEpoch,
+        super(const BattleSessionState.initial());
+
+  final BattleContentRepository _contentRepository;
+  final int _seed;
+  final _logger = Logger('BattleSessionCubit');
+
+  /// Loads battle content and initializes the session for [stageId].
+  Future<void> loadStage({String stageId = 'stage_1'}) async {
+    try {
+      emit(const BattleSessionState.loading());
+
+      final content = await _contentRepository.getBattleContent();
+      final stage = content.stages.firstWhere(
+        (s) => s.id == stageId,
+        orElse: () => content.stages.first,
+      );
+
+      final rng = SeededRandom(_seed);
+      final initialBoard = BoardGenerator.generate(rng);
+      final controller = BattleSessionController(
+        initialBoard: initialBoard,
+        randomService: rng,
+      );
+
+      emit(
+        BattleSessionState.ready(
+          content: content,
+          currentStage: stage,
+          sessionController: controller,
+        ),
+      );
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to load battle stage "$stageId"', e, stackTrace);
+      final errorMsg = e is ContentValidationException
+          ? e.message
+          : 'Không thể tải dữ liệu trận đánh. Vui lòng thử lại.';
+      emit(BattleSessionState.error(errorMessage: errorMsg));
+      emitEffect(BattleSessionEffect.showError(message: errorMsg));
+    }
+  }
+
+  /// Pauses the battle session.
+  void pause() {
+    final s = state;
+    if (s is BattleSessionStateReady) {
+      emit(s.copyWith(isPaused: true));
+    }
+  }
+
+  /// Resumes the battle session.
+  void resume() {
+    final s = state;
+    if (s is BattleSessionStateReady) {
+      emit(s.copyWith(isPaused: false));
+    }
+  }
+
+  /// Updates current combo display.
+  void updateCombo(int combo) {
+    final s = state;
+    if (s is BattleSessionStateReady) {
+      emit(s.copyWith(comboCount: math.max(s.comboCount, combo)));
+    }
+  }
+
+  /// Exits the battle back to Home.
+  void exitBattle() {
+    emitEffect(const BattleSessionEffect.exitToHome());
+  }
+
+  /// Retries the current stage with a fresh board.
+  Future<void> retryBattle() async {
+    final s = state;
+    if (s is BattleSessionStateReady) {
+      await loadStage(stageId: s.currentStage.id);
+    } else {
+      await loadStage();
+    }
+  }
+}

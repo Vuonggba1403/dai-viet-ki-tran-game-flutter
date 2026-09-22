@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:ezwork/app/app.dart';
 import 'package:ezwork/app/authorization/authorization_interceptor.dart';
 import 'package:ezwork/auth/auth.dart';
+import 'package:ezwork/battle/battle.dart';
 import 'package:ezwork/example/data/data_sources/example_rest_data_source.dart';
 import 'package:ezwork/example/example.dart' hide ExampleRestDataSource;
 import 'package:ezwork/home/ui/home_cubit/home_cubit.dart';
@@ -46,7 +47,11 @@ class ProductionServiceLocator {
           () => HomeCubit(userRepository: getIt(), logoutUseCase: getIt()))
       ..registerFactory(
           () => SplashCubit(userRepository: getIt(), splashRepository: getIt()))
-      ..registerFactory(() => LoginCubit(userRepository: getIt()));
+      ..registerFactory(() => LoginCubit(userRepository: getIt()))
+      ..registerLazySingleton(() => const LocalBattleContentDataSource())
+      ..registerLazySingleton(
+          () => BattleContentRepository(localDataSource: getIt()))
+      ..registerFactory(() => BattleSessionCubit(contentRepository: getIt()));
   }
 
   Dio createDio(AuthorizationInterceptor authorization) {

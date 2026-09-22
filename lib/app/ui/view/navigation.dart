@@ -1,4 +1,5 @@
 import 'package:ezwork/auth/auth.dart';
+import 'package:ezwork/battle/battle.dart';
 import 'package:ezwork/example/example.dart';
 import 'package:ezwork/home/home.dart';
 import 'package:ezwork/splash_screen/splash_screen.dart';
@@ -17,6 +18,14 @@ final router = GoRouter(
       name: LoginPage.routeName,
       path: '/${LoginPage.routeName}',
       builder: (context, routerState) => const LoginPage(),
+    ),
+    GoRoute(
+      name: BattlePage.routeName,
+      path: '/${BattlePage.routeName}',
+      builder: (context, routerState) {
+        final stageId = routerState.uri.queryParameters['stageId'] ?? 'stage_1';
+        return BattlePage(stageId: stageId);
+      },
     ),
     StatefulShellRoute.indexedStack(
       pageBuilder: (context, routerState, navigationShell) {

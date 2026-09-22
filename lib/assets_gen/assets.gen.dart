@@ -27,8 +27,20 @@ class $AssetsGameDataGen {
   /// File path: assets/game_data/.gitkeep
   String get aGitkeep => 'assets/game_data/.gitkeep';
 
+  /// File path: assets/game_data/enemies.json
+  String get enemies => 'assets/game_data/enemies.json';
+
+  /// File path: assets/game_data/heroes.json
+  String get heroes => 'assets/game_data/heroes.json';
+
+  /// File path: assets/game_data/skills.json
+  String get skills => 'assets/game_data/skills.json';
+
+  /// File path: assets/game_data/stages.json
+  String get stages => 'assets/game_data/stages.json';
+
   /// List of all assets
-  List<String> get values => [aGitkeep];
+  List<String> get values => [aGitkeep, enemies, heroes, skills, stages];
 }
 
 class $AssetsImagesGen {

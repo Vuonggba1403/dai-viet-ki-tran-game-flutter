@@ -1,0 +1,69 @@
+[
+  {
+    "id": "bandit",
+    "name_key": "enemy_bandit_name",
+    "max_hp": 500,
+    "attack": 40,
+    "defense": 20,
+    "initial_turn_counter": 3,
+    "reset_turn_counter": 3,
+    "target_rule": "lowest_hp",
+    "status_resistance": [],
+    "asset_key": "enemies/bandit"
+  },
+  {
+    "id": "skeleton_archer",
+    "name_key": "enemy_skeleton_archer_name",
+    "max_hp": 400,
+    "attack": 55,
+    "defense": 15,
+    "initial_turn_counter": 2,
+    "reset_turn_counter": 2,
+    "target_rule": "random",
+    "status_resistance": [],
+    "asset_key": "enemies/skeleton_archer"
+  },
+  {
+    "id": "goblin_bomber",
+    "name_key": "enemy_goblin_bomber_name",
+    "max_hp": 650,
+    "attack": 70,
+    "defense": 25,
+    "initial_turn_counter": 4,
+    "reset_turn_counter": 4,
+    "target_rule": "highest_attack",
+    "status_resistance": [],
+    "asset_key": "enemies/goblin_bomber"
+  },
+  {
+    "id": "necromancer",
+    "name_key": "enemy_necromancer_name",
+    "max_hp": 1200,
+    "attack": 85,
+    "defense": 40,
+    "initial_turn_counter": 3,
+    "reset_turn_counter": 3,
+    "target_rule": "random",
+    "status_resistance": [
+      "stun"
+    ],
+    "phases": [
+      {
+        "phase_number": 1,
+        "hp_threshold_percent": 100,
+        "description_key": "necromancer_phase_1"
+      },
+      {
+        "phase_number": 2,
+        "hp_threshold_percent": 60,
+        "description_key": "necromancer_phase_2"
+      },
+      {
+        "phase_number": 3,
+        "hp_threshold_percent": 25,
+        "description_key": "necromancer_phase_3"
+      }
+    ],
+    "asset_key": "enemies/necromancer"
+  }
+]
