@@ -2,6 +2,7 @@ import 'package:bloc_effects/bloc_effects.dart';
 import 'package:dai_viet_ki_tran_game/app/design_system/game_colors.dart';
 import 'package:dai_viet_ki_tran_game/app/di/dependencies.dart';
 import 'package:dai_viet_ki_tran_game/app/ui/widgets/game_viewport.dart';
+import 'package:dai_viet_ki_tran_game/audio/audio.dart';
 import 'package:dai_viet_ki_tran_game/battle/data/models/stage_definition.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_cubit.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_effect.dart';
@@ -65,7 +66,27 @@ class _BattlePageViewState extends State<_BattlePageView> {
       _game = Match3BattleGame(
         sessionController: state.sessionController,
         onComboChanged: cubit.updateCombo,
+        onBoardEvent: (event) {
+          final cue = const AudioEventMapper().mapBoardEvent(event);
+          if (cue != null && getIt.isRegistered<AudioController>()) {
+            getIt<AudioController>().playSfx(cue);
+          }
+        },
+        onCombatEvent: (event) {
+          final cue = const AudioEventMapper().mapCombatEvent(event);
+          if (cue != null && getIt.isRegistered<AudioController>()) {
+            getIt<AudioController>().playSfx(cue);
+          }
+        },
       );
+
+      final enemy = state.sessionController.currentEnemy;
+      final isBoss = enemy != null &&
+          enemy.phases != null &&
+          enemy.phases!.isNotEmpty;
+      if (getIt.isRegistered<AudioController>()) {
+        getIt<AudioController>().enterBattle(isBoss: isBoss);
+      }
     }
   }
 
@@ -78,6 +99,9 @@ class _BattlePageViewState extends State<_BattlePageView> {
       listener: (context, effect) {
         switch (effect) {
           case BattleSessionEffectExitToHome():
+            if (getIt.isRegistered<AudioController>()) {
+              getIt<AudioController>().enterHome();
+            }
             if (context.canPop()) {
               context.pop();
             } else {
@@ -203,6 +227,9 @@ class _BattlePageViewState extends State<_BattlePageView> {
                       onPause: () {
                         _game?.pauseBattle();
                         cubit.pause();
+                        if (getIt.isRegistered<AudioController>()) {
+                          getIt<AudioController>().pauseBattle();
+                        }
                       },
                     );
                   },
@@ -293,7 +320,20 @@ class _BattlePageViewState extends State<_BattlePageView> {
                     return HeroTeamRow(
                       heroes: state.sessionController.heroes,
                       canCastSkill: state.sessionController.canCastSkill,
-                      onCastSkill: cubit.castSkill,
+                      onCastSkill: (heroId) {
+                        final hero = state.sessionController.heroes
+                            .where((h) => h.id == heroId)
+                            .firstOrNull;
+                        if (hero != null) {
+                          final cue = const AudioEventMapper()
+                              .mapSkillId(hero.activeSkillId);
+                          if (cue != null &&
+                              getIt.isRegistered<AudioController>()) {
+                            getIt<AudioController>().playSfx(cue);
+                          }
+                        }
+                        cubit.castSkill(heroId);
+                      },
                     );
                   },
                 ),
@@ -312,13 +352,24 @@ class _BattlePageViewState extends State<_BattlePageView> {
                 onResume: () {
                   _game?.resumeBattle();
                   cubit.resume();
+                  if (getIt.isRegistered<AudioController>()) {
+                    getIt<AudioController>().resumeBattle();
+                  }
                 },
                 onRetry: () {
                   _game?.pauseBattle();
                   _game = null;
+                  if (getIt.isRegistered<AudioController>()) {
+                    getIt<AudioController>().resumeBattle();
+                  }
                   cubit.retryBattle();
                 },
-                onExit: cubit.exitBattle,
+                onExit: () {
+                  if (getIt.isRegistered<AudioController>()) {
+                    getIt<AudioController>().enterHome();
+                  }
+                  cubit.exitBattle();
+                },
               ),
             );
           },
@@ -333,6 +384,9 @@ class _BattlePageViewState extends State<_BattlePageView> {
     int score,
   ) {
     _game?.pauseBattle();
+    if (getIt.isRegistered<AudioController>()) {
+      getIt<AudioController>().handleVictory();
+    }
     final cubit = context.read<BattleSessionCubit>();
 
     return VictoryOverlay(
@@ -340,9 +394,17 @@ class _BattlePageViewState extends State<_BattlePageView> {
       score: score,
       onRetry: () {
         _game = null;
+        if (getIt.isRegistered<AudioController>()) {
+          getIt<AudioController>().resumeBattle();
+        }
         cubit.retryBattle();
       },
-      onExit: cubit.exitBattle,
+      onExit: () {
+        if (getIt.isRegistered<AudioController>()) {
+          getIt<AudioController>().enterHome();
+        }
+        cubit.exitBattle();
+      },
     );
   }
 
@@ -351,15 +413,26 @@ class _BattlePageViewState extends State<_BattlePageView> {
     StageDefinition stage,
   ) {
     _game?.pauseBattle();
+    if (getIt.isRegistered<AudioController>()) {
+      getIt<AudioController>().handleDefeat();
+    }
     final cubit = context.read<BattleSessionCubit>();
 
     return DefeatOverlay(
       stage: stage,
       onRetry: () {
         _game = null;
+        if (getIt.isRegistered<AudioController>()) {
+          getIt<AudioController>().resumeBattle();
+        }
         cubit.retryBattle();
       },
-      onExit: cubit.exitBattle,
+      onExit: () {
+        if (getIt.isRegistered<AudioController>()) {
+          getIt<AudioController>().enterHome();
+        }
+        cubit.exitBattle();
+      },
     );
   }
 }

@@ -15,11 +15,13 @@ class BattleAnimationQueue {
     this.onAnimationStart,
     this.onAnimationComplete,
     this.onComboStep,
+    this.onBoardEvent,
   });
 
   final VoidCallback? onAnimationStart;
   final VoidCallback? onAnimationComplete;
   final ValueChanged<int>? onComboStep;
+  final ValueChanged<BoardEvent>? onBoardEvent;
 
   bool _isBusy = false;
 
@@ -59,6 +61,7 @@ class BattleAnimationQueue {
     required BattleGameConfig config,
     Map<TileType, Sprite>? sprites,
   }) async {
+    onBoardEvent?.call(event);
     switch (event) {
       case SwapStarted():
         // Swap visual movement starts on Accepted or Rejected

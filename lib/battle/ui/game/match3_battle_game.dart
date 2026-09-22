@@ -1,8 +1,10 @@
 import 'package:dai_viet_ki_tran_game/assets_gen/assets.gen.dart';
 import 'package:dai_viet_ki_tran_game/battle/domain/battle_session_controller.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/board/board_event.dart';
 import 'package:dai_viet_ki_tran_game/battle/domain/board/swap.dart';
 import 'package:dai_viet_ki_tran_game/battle/domain/board/tile_type.dart';
 import 'package:dai_viet_ki_tran_game/battle/domain/combat/battle_phase.dart';
+import 'package:dai_viet_ki_tran_game/battle/domain/combat/combat_event.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/game/animation/battle_animation_queue.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/game/battle_game_config.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/game/components/board_component.dart';
@@ -23,6 +25,8 @@ class Match3BattleGame extends FlameGame {
     this.onComboChanged,
     this.onAnimationStart,
     this.onAnimationComplete,
+    this.onBoardEvent,
+    this.onCombatEvent,
   });
 
   final BattleSessionController sessionController;
@@ -30,6 +34,8 @@ class Match3BattleGame extends FlameGame {
   final ValueChanged<int>? onComboChanged;
   final VoidCallback? onAnimationStart;
   final VoidCallback? onAnimationComplete;
+  final ValueChanged<BoardEvent>? onBoardEvent;
+  final ValueChanged<CombatEvent>? onCombatEvent;
 
   BoardComponent? _boardComponent;
   BoardComponent get boardComponent => _boardComponent!;
@@ -100,6 +106,7 @@ class Match3BattleGame extends FlameGame {
       onComboStep: (cycle) {
         onComboChanged?.call(cycle);
       },
+      onBoardEvent: onBoardEvent,
     );
 
     // 4. Lazy-load only the 5 battle tile sprites using generated Assets API
@@ -167,6 +174,9 @@ class Match3BattleGame extends FlameGame {
 
       if (resolution.isSuccess) {
         onComboChanged?.call(resolution.comboCount);
+        for (final combatEvent in sessionController.lastCombatEvents) {
+          onCombatEvent?.call(combatEvent);
+        }
       }
     } finally {
       gestureController.isLocked = _isInputLocked;
