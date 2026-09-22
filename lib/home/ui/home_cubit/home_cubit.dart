@@ -43,9 +43,12 @@ class HomeCubit extends CubitWithEffects<HomeState, HomeStateEffect> {
       emitEffect(const HomeStateEffect.logout());
     } catch (e, stackTrace) {
       _logger.info('Logout error', e, stackTrace);
-      emitEffect(const HomeStateEffect.error(
+      emitEffect(
+        const HomeStateEffect.error(
           errorMessage:
-              'Somthing went wrong. Please check your internet connection and try again.'));
+              'Somthing went wrong. Please check your internet connection and try again.',
+        ),
+      );
     }
   }
 }

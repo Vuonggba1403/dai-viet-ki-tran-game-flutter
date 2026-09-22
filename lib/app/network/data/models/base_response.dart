@@ -16,8 +16,7 @@ class BaseResponse<T> {
   factory BaseResponse.fromJson(
     Map<String, dynamic> json,
     T Function(Object? json) fromJsonT,
-  ) =>
-      _$BaseResponseFromJson(json, fromJsonT);
+  ) => _$BaseResponseFromJson(json, fromJsonT);
 
   final T data;
   final bool success;
@@ -31,13 +30,12 @@ class BaseResponse<T> {
 @JsonSerializable(genericArgumentFactories: true)
 class BasePaginationResponse<T> {
   const BasePaginationResponse(this.data, this.pagination, bool? success)
-      : success = success ?? true;
+    : success = success ?? true;
 
   factory BasePaginationResponse.fromJson(
     Map<String, dynamic> json,
     T Function(Object? json) fromJsonT,
-  ) =>
-      _$BasePaginationResponseFromJson(json, fromJsonT);
+  ) => _$BasePaginationResponseFromJson(json, fromJsonT);
 
   final T data;
   final Pagination pagination;

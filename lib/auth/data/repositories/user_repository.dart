@@ -22,8 +22,9 @@ class UserRepository {
   @visibleForTesting
   final RemoteUserDataSource remoteUserDataSource;
 
-  final BehaviorSubject<User> _userBehaviorSubject =
-      BehaviorSubject.seeded(_tempUser);
+  final BehaviorSubject<User> _userBehaviorSubject = BehaviorSubject.seeded(
+    _tempUser,
+  );
 
   Stream<User> get userStream => _userBehaviorSubject.asBroadcastStream();
 
@@ -50,9 +51,13 @@ class UserRepository {
       await Future.wait([
         _setUser(response.data!),
         localStorageDataSource.write(
-            key: StorageKey.accessToken, value: response.token),
+          key: StorageKey.accessToken,
+          value: response.token,
+        ),
         localStorageDataSource.write(
-            key: StorageKey.refreshToken, value: response.refreshToken),
+          key: StorageKey.refreshToken,
+          value: response.refreshToken,
+        ),
       ]);
     }
     return response;
@@ -60,7 +65,9 @@ class UserRepository {
 
   Future<void> _setUser(User user) async {
     await localStorageDataSource.write(
-        key: StorageKey.user, value: jsonEncode(user.toJson()));
+      key: StorageKey.user,
+      value: jsonEncode(user.toJson()),
+    );
     _userBehaviorSubject.add(user);
   }
 

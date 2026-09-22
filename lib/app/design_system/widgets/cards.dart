@@ -19,10 +19,10 @@ class EzWoCard extends StatelessWidget {
     this.margin,
     Color? backgroundColor,
     this.cornerRadius,
-  })  : backgroundColor = backgroundColor ?? Colors.white,
-        borderColor = EzWorkColors.darkOnSurface,
-        elevation = 0,
-        shadowColor = null;
+  }) : backgroundColor = backgroundColor ?? Colors.white,
+       borderColor = EzWorkColors.darkOnSurface,
+       elevation = 0,
+       shadowColor = null;
 
   EzWoCard.greyBorderWithShadow({
     required this.child,
@@ -30,10 +30,10 @@ class EzWoCard extends StatelessWidget {
     this.margin,
     Color? backgroundColor,
     this.cornerRadius,
-  })  : backgroundColor = backgroundColor ?? Colors.white,
-        borderColor = EzWorkColors.darkOnSurface,
-        elevation = 8,
-        shadowColor = Colors.black.withValues(alpha: 0.3);
+  }) : backgroundColor = backgroundColor ?? Colors.white,
+       borderColor = EzWorkColors.darkOnSurface,
+       elevation = 8,
+       shadowColor = Colors.black.withValues(alpha: 0.3);
 
   final Widget child;
   final EdgeInsets? margin;

@@ -30,15 +30,15 @@ class _ExamplePageState extends State<ExamplePage> {
         builder: (context, state) {
           return switch (state) {
             ExampleStateLoading() => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: CircularProgressIndicator(),
+            ),
             ExampleStateSuccess(:final mostStarredGithubRepositories) =>
               GithubRepositoriesList(
                 mostStarredRepositories: mostStarredGithubRepositories,
               ),
             ExampleStateError() => const Center(
-                child: Text('Error'),
-              ),
+              child: Text('Error'),
+            ),
           };
         },
       ),

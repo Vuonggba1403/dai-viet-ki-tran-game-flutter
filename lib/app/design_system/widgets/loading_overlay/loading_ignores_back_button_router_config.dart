@@ -11,10 +11,10 @@ class LoadingIgnoresBackButtonRouterConfig<T> extends RouterConfig<T> {
   LoadingIgnoresBackButtonRouterConfig.fromRouterConfig(
     RouterConfig<T> routerConfig,
   ) : this(
-          routerDelegate: routerConfig.routerDelegate,
-          routeInformationProvider: routerConfig.routeInformationProvider,
-          routeInformationParser: routerConfig.routeInformationParser,
-        );
+        routerDelegate: routerConfig.routerDelegate,
+        routeInformationProvider: routerConfig.routeInformationProvider,
+        routeInformationParser: routerConfig.routeInformationParser,
+      );
 
   final _backButtonDispatcher = LoadingIgnoresBackButtonDispatcher();
 

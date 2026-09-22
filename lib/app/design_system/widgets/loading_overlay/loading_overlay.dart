@@ -30,11 +30,12 @@ import 'package:flutter/material.dart';
 ///   void showOverlay() => context.loadingOverlay.show();
 /// ```
 class LoadingOverlay extends StatefulWidget {
-  LoadingOverlay(
-      {required this.loadingIndicatorColor,
-      required this.child,
-      this.backgroundColor,
-      super.key});
+  LoadingOverlay({
+    required this.loadingIndicatorColor,
+    required this.child,
+    this.backgroundColor,
+    super.key,
+  });
 
   final Widget child;
   final Color loadingIndicatorColor;
@@ -66,8 +67,10 @@ class _LoadingOverlayState extends State<LoadingOverlay> {
             color:
                 widget.backgroundColor ?? Colors.black.withValues(alpha: 0.4),
             child: Center(
-                child: CircularProgressIndicator(
-                    color: widget.loadingIndicatorColor)),
+              child: CircularProgressIndicator(
+                color: widget.loadingIndicatorColor,
+              ),
+            ),
           ),
       ],
     );

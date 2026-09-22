@@ -24,15 +24,23 @@ Future<void> showEzWorkConfirmDialog(
       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
       child: Dialog(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(EzWorkSpacing.normal,
-              EzWorkSpacing.medium, EzWorkSpacing.normal, EzWorkSpacing.medium),
+          padding: const EdgeInsets.fromLTRB(
+            EzWorkSpacing.normal,
+            EzWorkSpacing.medium,
+            EzWorkSpacing.normal,
+            EzWorkSpacing.medium,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: theme.textTheme.bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.w700, height: 1.15)),
+              Text(
+                title,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  height: 1.15,
+                ),
+              ),
               const SizedBox(height: EzWorkSpacing.spacing12),
               Text(content, style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: EzWorkSpacing.large),

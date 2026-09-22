@@ -11,8 +11,8 @@ class ExampleRepository {
   final ExampleRestDataSource exampleFeatureRestDataSource;
 
   Future<List<ExampleData>> getMostStarredGithubRepos() async {
-    final apiResponse =
-        await exampleFeatureRestDataSource.getMostStarredGithubRepos();
+    final apiResponse = await exampleFeatureRestDataSource
+        .getMostStarredGithubRepos();
     return apiResponse.items;
   }
 }

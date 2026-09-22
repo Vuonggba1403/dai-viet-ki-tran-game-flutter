@@ -25,8 +25,7 @@ class RefreshTokenUseCase {
 
   Future<Response<dynamic>> call(
     RequestOptions requestOptions,
-  ) async =>
-      _refreshToken(requestOptions);
+  ) async => _refreshToken(requestOptions);
 
   Future<Response<dynamic>> _retryRequest(RequestOptions requestOptions) async {
     final token = await localStorageDataSource.read(StorageKey.accessToken);
@@ -64,9 +63,13 @@ class RefreshTokenUseCase {
       final response = await userRepository.fetchNewToken();
       if (response.success) {
         await localStorageDataSource.write(
-            key: StorageKey.accessToken, value: response.token);
+          key: StorageKey.accessToken,
+          value: response.token,
+        );
         await localStorageDataSource.write(
-            key: StorageKey.refreshToken, value: response.refreshToken);
+          key: StorageKey.refreshToken,
+          value: response.refreshToken,
+        );
       } else {
         throw SessionExpiredException();
       }

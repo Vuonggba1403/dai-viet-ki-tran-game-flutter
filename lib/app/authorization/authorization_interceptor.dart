@@ -18,7 +18,9 @@ class AuthorizationInterceptor extends InterceptorsWrapper {
 
   @override
   Future<void> onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final token = await localStorageDataSource.read(StorageKey.accessToken);
     final deviceId = await DeviceInfoHelpers.getDeviceId();
     if (token != null &&
@@ -36,7 +38,9 @@ class AuthorizationInterceptor extends InterceptorsWrapper {
 
   @override
   Future<void> onError(
-      DioException err, ErrorInterceptorHandler handler) async {
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
     final token = await localStorageDataSource.read(StorageKey.refreshToken);
     if (err.response?.statusCode == 401 &&
         !err.requestOptions.path.endsWith('refresh-token') &&

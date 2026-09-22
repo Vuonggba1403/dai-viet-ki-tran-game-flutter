@@ -211,8 +211,9 @@ class _EzWorkTextFormFieldState extends State<EzWorkTextFormField> {
           Text(
             widget.labelText,
             style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: widget.enabled ? normalColor : disabledColor),
+              fontWeight: FontWeight.w600,
+              color: widget.enabled ? normalColor : disabledColor,
+            ),
           ),
         TextFormField(
           autofocus: widget.autoFocus ?? false,
@@ -236,8 +237,9 @@ class _EzWorkTextFormFieldState extends State<EzWorkTextFormField> {
           onFieldSubmitted: widget.onFieldSubmitted,
           onTap: widget.onTap,
           validator: widget.validator,
-          style: theme.textTheme.bodyLarge
-              ?.copyWith(color: widget.enabled ? normalColor : disabledColor),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: widget.enabled ? normalColor : disabledColor,
+          ),
           inputFormatters: widget.inputFormatters,
           decoration: InputDecoration(
             border: UnderlineInputBorder(
@@ -261,8 +263,9 @@ class _EzWorkTextFormFieldState extends State<EzWorkTextFormField> {
             enabled: widget.enabled,
             hintStyle: theme.textTheme.bodyLarge,
             hintText: widget.hintText,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: EzWorkSpacing.spacing12),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: EzWorkSpacing.spacing12,
+            ),
             counterText: '',
             error: widget.errorText == null
                 ? null
@@ -272,8 +275,10 @@ class _EzWorkTextFormFieldState extends State<EzWorkTextFormField> {
                       children: [
                         RotatedBox(
                           quarterTurns: 2,
-                          child: Icon(Icons.info,
-                              color: theme.colorScheme.errorContainer),
+                          child: Icon(
+                            Icons.info,
+                            color: theme.colorScheme.errorContainer,
+                          ),
                         ),
                         const SizedBox(width: EzWorkSpacing.small),
                         Expanded(

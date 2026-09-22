@@ -48,9 +48,12 @@ class LoginCubit extends CubitWithEffects<LoginState, LoginStateEffect> {
       emitEffect(LoginStateEffect.error(errorMessage: e.errorDetail.message));
     } catch (e, stacktrace) {
       _logger.info('Login error', e, stacktrace);
-      emitEffect(const LoginStateEffect.error(
+      emitEffect(
+        const LoginStateEffect.error(
           errorMessage:
-              'Somthing went wrong. Please check your internet connection and try again.'));
+              'Somthing went wrong. Please check your internet connection and try again.',
+        ),
+      );
     }
   }
 }

@@ -41,8 +41,11 @@ class _LoginPageState extends State<LoginPage> {
             context.goNamed(HomePage.routeName);
           case LoginStateEffectError(:final errorMessage):
             context.loadingOverlay.hide();
-            showEzWorkAlertDialog(context,
-                title: 'Oops,', content: errorMessage);
+            showEzWorkAlertDialog(
+              context,
+              title: 'Oops,',
+              content: errorMessage,
+            );
           case LoginStateEffectLoading():
             context.loadingOverlay.show();
         }
@@ -51,8 +54,9 @@ class _LoginPageState extends State<LoginPage> {
         appBar: AppBar(title: const Text('Login')),
         body: Center(
           child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: EzWorkSpacing.large),
+            padding: const EdgeInsets.symmetric(
+              horizontal: EzWorkSpacing.large,
+            ),
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

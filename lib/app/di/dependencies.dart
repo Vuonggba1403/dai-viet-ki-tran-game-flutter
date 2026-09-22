@@ -22,35 +22,49 @@ class ProductionServiceLocator {
     final sharedPreferences = SharedPreferencesAsync();
     getIt.registerSingleton(sharedPreferences);
 
-    final localStorageDataSource =
-        LocalStorageDataSource(sharedPreferences: getIt());
+    final localStorageDataSource = LocalStorageDataSource(
+      sharedPreferences: getIt(),
+    );
     await localStorageDataSource.init();
 
     getIt
       ..registerSingleton(localStorageDataSource)
       ..registerSingleton(appConstants)
-      ..registerLazySingleton(() => AuthorizationInterceptor(
-          appConstants: getIt(), localStorageDataSource: getIt()))
+      ..registerLazySingleton(
+        () => AuthorizationInterceptor(
+          appConstants: getIt(),
+          localStorageDataSource: getIt(),
+        ),
+      )
       ..registerLazySingleton(() => createDio(getIt()))
       ..registerLazySingleton(() => ExampleRestDataSource(getIt()))
       ..registerLazySingleton(
-          () => ExampleRepository(exampleFeatureRestDataSource: getIt()))
+        () => ExampleRepository(exampleFeatureRestDataSource: getIt()),
+      )
       ..registerFactory(() => ExampleCubit(exampleRepository: getIt()))
       ..registerLazySingleton(
-          () => RemoteUserDataSource(getIt(), baseUrl: appConstants.baseUrl))
-      ..registerLazySingleton(() => UserRepository(
-          localStorageDataSource: getIt(), remoteUserDataSource: getIt()))
+        () => RemoteUserDataSource(getIt(), baseUrl: appConstants.baseUrl),
+      )
+      ..registerLazySingleton(
+        () => UserRepository(
+          localStorageDataSource: getIt(),
+          remoteUserDataSource: getIt(),
+        ),
+      )
       ..registerLazySingleton(() => SplashRepository(userRepository: getIt()))
       ..registerFactory(() => LogoutUseCase(userRepository: getIt()))
       ..registerFactory(() => RefreshTokenUseCase(getIt(), getIt(), getIt()))
       ..registerFactory(
-          () => HomeCubit(userRepository: getIt(), logoutUseCase: getIt()))
+        () => HomeCubit(userRepository: getIt(), logoutUseCase: getIt()),
+      )
       ..registerFactory(
-          () => SplashCubit(userRepository: getIt(), splashRepository: getIt()))
+        () => SplashCubit(userRepository: getIt(), splashRepository: getIt()),
+      )
       ..registerFactory(() => LoginCubit(userRepository: getIt()))
       ..registerLazySingleton(() => const LocalBattleContentDataSource())
       ..registerLazySingleton(
-          () => BattleContentRepository(localDataSource: getIt()))
+        () => BattleContentRepository(localDataSource: getIt()),
+      )
       ..registerFactory(() => BattleSessionCubit(contentRepository: getIt()));
   }
 

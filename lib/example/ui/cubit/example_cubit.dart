@@ -18,10 +18,11 @@ class ExampleCubit extends Cubit<ExampleState> {
   Future<void> load() async {
     try {
       emit(const ExampleState.loading());
-      final mostStarredRepos =
-          await exampleRepository.getMostStarredGithubRepos();
-      emit(ExampleState.success(
-          mostStarredGithubRepositories: mostStarredRepos));
+      final mostStarredRepos = await exampleRepository
+          .getMostStarredGithubRepos();
+      emit(
+        ExampleState.success(mostStarredGithubRepositories: mostStarredRepos),
+      );
     } catch (error, stacktrace) {
       log.severe('Error while trying to load ExampleCubit', error, stacktrace);
       emit(const ExampleState.error());

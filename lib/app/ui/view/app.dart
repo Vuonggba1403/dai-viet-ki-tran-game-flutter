@@ -17,34 +17,38 @@ class _AppState extends State<App> {
   /// Remove this if the app has too many images.
   Future<void> precacheImages() async {
     final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    final imageCachingFutures = assetManifest //
-        .listAssets()
-        .where(
-          (assetPath) =>
-              assetPath.endsWith('.jpg') || assetPath.endsWith('.png'),
-        )
-        .map((assetPath) async {
-      final imageProvider = AssetImage(assetPath);
-      await precacheImage(imageProvider, context);
-      if (mounted) {
-        imageProvider
-            .resolve(createLocalImageConfiguration(context))
-            .addListener(
-          ImageStreamListener((imageInfo, synchronousCall) {
-            // An empty listener to keep this image alive forever.
-          }),
-        );
-      }
-    });
+    final imageCachingFutures =
+        assetManifest //
+            .listAssets()
+            .where(
+              (assetPath) =>
+                  assetPath.endsWith('.jpg') || assetPath.endsWith('.png'),
+            )
+            .map((assetPath) async {
+              final imageProvider = AssetImage(assetPath);
+              await precacheImage(imageProvider, context);
+              if (mounted) {
+                imageProvider
+                    .resolve(createLocalImageConfiguration(context))
+                    .addListener(
+                      ImageStreamListener((imageInfo, synchronousCall) {
+                        // An empty listener to keep this image alive forever.
+                      }),
+                    );
+              }
+            });
 
-    final svgCachingFutures = assetManifest //
-        .listAssets()
-        .where((assetPath) => assetPath.endsWith('.svg'))
-        .map((svgAsset) async {
-      final loader = SvgAssetLoader(svgAsset);
-      await svg.cache
-          .putIfAbsent(loader.cacheKey(null), () => loader.loadBytes(null));
-    });
+    final svgCachingFutures =
+        assetManifest //
+            .listAssets()
+            .where((assetPath) => assetPath.endsWith('.svg'))
+            .map((svgAsset) async {
+              final loader = SvgAssetLoader(svgAsset);
+              await svg.cache.putIfAbsent(
+                loader.cacheKey(null),
+                () => loader.loadBytes(null),
+              );
+            });
 
     await Future.wait([...imageCachingFutures, ...svgCachingFutures]);
   }
@@ -66,8 +70,9 @@ class _AppState extends State<App> {
       },
       child: MaterialApp.router(
         theme: appTheme,
-        routerConfig:
-            LoadingIgnoresBackButtonRouterConfig.fromRouterConfig(router),
+        routerConfig: LoadingIgnoresBackButtonRouterConfig.fromRouterConfig(
+          router,
+        ),
         builder: (context, child) => _MediaQueryWrapper(
           child: LoadingOverlay(
             loadingIndicatorColor: appTheme.colorScheme.primary,
