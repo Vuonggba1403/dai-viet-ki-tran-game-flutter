@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:dai_viet_ki_tran_game/app/design_system/game_colors.dart';
 import 'package:dai_viet_ki_tran_game/battle/domain/board/board.dart';
 import 'package:dai_viet_ki_tran_game/battle/domain/board/board_position.dart';
 import 'package:dai_viet_ki_tran_game/battle/domain/board/tile.dart';
@@ -227,19 +228,35 @@ class BoardComponent extends PositionComponent {
     );
 
     final trayPaint = Paint()
-      ..color = const Color(0xFF1E242B)
+      ..color = GameColors.woodBoard
       ..style = PaintingStyle.fill;
     canvas.drawRRect(trayRRect, trayPaint);
 
     final trayBorderPaint = Paint()
-      ..color = const Color(0xFF37474F)
+      ..color = GameColors.goldBorder
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5;
+      ..strokeWidth = 3.0;
     canvas.drawRRect(trayRRect, trayBorderPaint);
 
-    // 2. Draw cell slots
-    final slotPaint = Paint()
-      ..color = const Color(0xFF13181E)
+    // Inner bevel line
+    final innerBevelPaint = Paint()
+      ..color = const Color(0xFF5D3A20)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        trayRect.deflate(2),
+        const Radius.circular(10),
+      ),
+      innerBevelPaint,
+    );
+
+    // 2. Draw cell slots with alternating light/dark wood
+    final slotLightPaint = Paint()
+      ..color = GameColors.woodSlotLight
+      ..style = PaintingStyle.fill;
+    final slotDarkPaint = Paint()
+      ..color = GameColors.woodSlotDark
       ..style = PaintingStyle.fill;
 
     for (var r = 0; r < config.rowCount; r++) {
@@ -254,7 +271,11 @@ class BoardComponent extends PositionComponent {
           slotRect,
           Radius.circular(_tileSize * 0.18),
         );
-        canvas.drawRRect(slotRRect, slotPaint);
+        final isEvenCell = (r + c).isEven;
+        canvas.drawRRect(
+          slotRRect,
+          isEvenCell ? slotLightPaint : slotDarkPaint,
+        );
       }
     }
   }

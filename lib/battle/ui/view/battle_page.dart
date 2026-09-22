@@ -1,5 +1,7 @@
 import 'package:bloc_effects/bloc_effects.dart';
+import 'package:dai_viet_ki_tran_game/app/design_system/game_colors.dart';
 import 'package:dai_viet_ki_tran_game/app/di/dependencies.dart';
+import 'package:dai_viet_ki_tran_game/app/ui/widgets/game_viewport.dart';
 import 'package:dai_viet_ki_tran_game/battle/data/models/stage_definition.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_cubit.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/cubit/battle_session_effect.dart';
@@ -8,6 +10,9 @@ import 'package:dai_viet_ki_tran_game/battle/ui/game/match3_battle_game.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/overlays/battle_hud.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/overlays/hero_team_row.dart';
 import 'package:dai_viet_ki_tran_game/battle/ui/overlays/pause_overlay.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/widgets/battle_arena.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/widgets/battle_background.dart';
+import 'package:dai_viet_ki_tran_game/battle/ui/widgets/match3_board_viewport.dart';
 import 'package:dai_viet_ki_tran_game/home/ui/view/home_page.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -159,110 +164,129 @@ class _BattlePageViewState extends State<_BattlePageView> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // 1. Flame Match-3 Game Engine
-        if (_game != null)
-          Positioned.fill(
-            child: GameWidget(
-              game: _game!,
-              loadingBuilder: (context) => const Center(
-                child: CircularProgressIndicator(color: Colors.amberAccent),
-              ),
-              errorBuilder: (context, error) {
-                _logger.severe(
-                  'GameWidget encountered an internal engine error',
-                  error,
-                );
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.warning_amber_rounded,
-                          color: Colors.amberAccent,
-                          size: 48,
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Đã xảy ra lỗi trong trận đấu. Vui lòng thử lại.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              key: const Key('game_error_retry_button'),
-                              onPressed: cubit.retryBattle,
-                              child: const Text('Thử lại'),
-                            ),
-                            const SizedBox(width: 16),
-                            OutlinedButton(
-                              key: const Key('game_error_exit_button'),
-                              onPressed: cubit.exitBattle,
-                              child: const Text('Thoát'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-        // 2. Top HUD with stage info, enemy combat card, combo, and pause button
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child:
-              BlocSelector<
-                BattleSessionCubit,
-                BattleSessionState,
-                ({int combo, int revision})
-              >(
-                selector: (s) => s is BattleSessionStateReady
-                    ? (combo: s.comboCount, revision: s.combatRevision)
-                    : (combo: 0, revision: 0),
-                builder: (context, data) {
-                  return BattleHud(
-                    stageTitle: state.currentStage.displayNameKey,
-                    comboCount: data.combo,
-                    enemy: state.sessionController.currentEnemy,
-                    remainingTurns: state.sessionController.remainingTurns,
-                    currentWave: state.sessionController.currentWaveNumber,
-                    totalWaves: state.sessionController.totalWaves,
-                    onPause: () {
-                      _game?.pauseBattle();
-                      cubit.pause();
-                    },
-                  );
-                },
-              ),
+        // 1. Stage background with vignette overlay
+        Positioned.fill(
+          child: BattleBackground(stageId: state.currentStage.id),
         ),
 
-        // 3. Bottom Hero Team Row (4 heroes HP, Mana, and skill buttons)
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: BlocSelector<BattleSessionCubit, BattleSessionState, int>(
-            selector: (s) =>
-                s is BattleSessionStateReady ? s.combatRevision : 0,
-            builder: (context, _) {
-              return HeroTeamRow(
-                heroes: state.sessionController.heroes,
-                canCastSkill: state.sessionController.canCastSkill,
-                onCastSkill: cubit.castSkill,
-              );
-            },
+        // 2. Main portrait column constrained by GameViewport
+        Positioned.fill(
+          child: GameViewport(
+            backgroundColor: Colors.transparent,
+            child: Column(
+              children: [
+                // Top HUD with stage info, arena, and versus combat HUD
+                BlocSelector<
+                  BattleSessionCubit,
+                  BattleSessionState,
+                  ({int combo, int revision})
+                >(
+                  selector: (s) => s is BattleSessionStateReady
+                      ? (combo: s.comboCount, revision: s.combatRevision)
+                      : (combo: 0, revision: 0),
+                  builder: (context, data) {
+                    return BattleHud(
+                      stageTitle: state.currentStage.displayNameKey,
+                      comboCount: data.combo,
+                      enemy: state.sessionController.currentEnemy,
+                      heroes: state.sessionController.heroes,
+                      remainingTurns: state.sessionController.remainingTurns,
+                      currentWave: state.sessionController.currentWaveNumber,
+                      totalWaves: state.sessionController.totalWaves,
+                      arena: BattleArena(
+                        heroes: state.sessionController.heroes,
+                        enemy: state.sessionController.currentEnemy,
+                      ),
+                      onPause: () {
+                        _game?.pauseBattle();
+                        cubit.pause();
+                      },
+                    );
+                  },
+                ),
+
+                // Match-3 Board Viewport: 1:1 AspectRatio square box hosting GameWidget
+                Expanded(
+                  child: Match3BoardViewport(
+                    gameWidget: _game != null
+                        ? GameWidget(
+                            game: _game!,
+                            loadingBuilder: (context) => const Center(
+                              child: CircularProgressIndicator(
+                                color: GameColors.goldPrimary,
+                              ),
+                            ),
+                            errorBuilder: (context, error) {
+                              _logger.severe(
+                                'GameWidget encountered an internal engine error',
+                                error,
+                              );
+                              return Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.warning_amber_rounded,
+                                        color: Colors.amberAccent,
+                                        size: 48,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        'Đã xảy ra lỗi trong trận đấu. Vui lòng thử lại.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          ElevatedButton(
+                                            key: const Key(
+                                              'game_error_retry_button',
+                                            ),
+                                            onPressed: cubit.retryBattle,
+                                            child: const Text('Thử lại'),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          OutlinedButton(
+                                            key: const Key(
+                                              'game_error_exit_button',
+                                            ),
+                                            onPressed: cubit.exitBattle,
+                                            child: const Text('Thoát'),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ),
+
+                // Bottom Hero Team Row (4 heroes HP, Mana, and skill buttons)
+                BlocSelector<BattleSessionCubit, BattleSessionState, int>(
+                  selector: (s) =>
+                      s is BattleSessionStateReady ? s.combatRevision : 0,
+                  builder: (context, _) {
+                    return HeroTeamRow(
+                      heroes: state.sessionController.heroes,
+                      canCastSkill: state.sessionController.canCastSkill,
+                      onCastSkill: cubit.castSkill,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
 

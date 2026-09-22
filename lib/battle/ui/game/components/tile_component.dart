@@ -102,33 +102,46 @@ class TileComponent extends PositionComponent {
     super.render(canvas);
 
     final rect = Rect.fromLTWH(0, 0, size.x, size.y);
-    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(size.x * 0.18));
 
-    // 1. Draw base rounded rect with element-specific color
-    final bgPaint = Paint()
-      ..color = _colorForType(tile.type)
-      ..style = PaintingStyle.fill;
-    canvas.drawRRect(rrect, bgPaint);
-
-    // 2. Draw subtle border
-    final borderPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.35)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-    canvas.drawRRect(rrect, borderPaint);
-
-    // 3. Draw sprite if loaded, otherwise render distinct symbol for accessibility
     if (sprite != null) {
+      // 1. Subtle ground/tile shadow
+      final shadowPaint = Paint()
+        ..color = Colors.black.withValues(alpha: 0.25)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5);
+      canvas.drawCircle(
+        Offset(size.x * 0.5, size.y * 0.54),
+        size.x * 0.42,
+        shadowPaint,
+      );
+
+      // 2. Render crisp tile sprite as primary visual
       sprite!.render(
         canvas,
-        position: Vector2(size.x * 0.1, size.y * 0.1),
-        size: Vector2(size.x * 0.8, size.y * 0.8),
+        position: Vector2(size.x * 0.03, size.y * 0.03),
+        size: Vector2(size.x * 0.94, size.y * 0.94),
       );
     } else {
+      // Fallback Canvas rendering when sprite asset is not loaded
+      final rrect = RRect.fromRectAndRadius(
+        rect,
+        Radius.circular(size.x * 0.18),
+      );
+
+      final bgPaint = Paint()
+        ..color = _colorForType(tile.type)
+        ..style = PaintingStyle.fill;
+      canvas.drawRRect(rrect, bgPaint);
+
+      final borderPaint = Paint()
+        ..color = Colors.white.withValues(alpha: 0.35)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0;
+      canvas.drawRRect(rrect, borderPaint);
+
       _renderSymbol(canvas, rect);
     }
 
-    // 4. Render special tile overlays
+    // 3. Render special tile overlays
     if (tile.isSpecial) {
       _renderSpecialOverlay(canvas, rect);
     }
