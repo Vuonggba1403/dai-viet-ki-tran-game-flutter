@@ -9,10 +9,10 @@ enum BgmTrack {
 extension BgmTrackX on BgmTrack {
   /// Relative asset path within the audio prefix (assets/audio/).
   String get filename => switch (this) {
-    BgmTrack.title => 'bgm/title_intro.ogg',
-    BgmTrack.home => 'bgm/home_loop.ogg',
-    BgmTrack.battle => 'bgm/battle_loop.ogg',
-    BgmTrack.boss => 'bgm/boss_loop.ogg',
+    BgmTrack.title => 'bgm/title_intro.mp3',
+    BgmTrack.home => 'bgm/home_loop.mp3',
+    BgmTrack.battle => 'bgm/battle_loop.mp3',
+    BgmTrack.boss => 'bgm/boss_loop.mp3',
   };
 
   /// Full bundle asset path.
@@ -54,25 +54,25 @@ enum SfxCue {
 extension SfxCueX on SfxCue {
   /// Relative asset path within the audio prefix (assets/audio/).
   String get filename => switch (this) {
-    SfxCue.buttonClick => 'sfx/ui/button_click.ogg',
-    SfxCue.panelOpen => 'sfx/ui/panel_open.ogg',
-    SfxCue.tileSwap => 'sfx/match3/tile_swap.ogg',
-    SfxCue.match3 => 'sfx/match3/match_3.ogg',
-    SfxCue.combo2 => 'sfx/match3/combo_2.ogg',
-    SfxCue.combo3 => 'sfx/match3/combo_3.ogg',
-    SfxCue.combo4 => 'sfx/match3/combo_4.ogg',
-    SfxCue.comboMax => 'sfx/match3/combo_max.ogg',
-    SfxCue.arrowShot => 'sfx/combat/arrow_shot.ogg',
-    SfxCue.criticalHit => 'sfx/combat/critical_hit.ogg',
-    SfxCue.enemyHit => 'sfx/combat/enemy_hit.ogg',
-    SfxCue.spearHit => 'sfx/combat/spear_hit.ogg',
-    SfxCue.swordSlash => 'sfx/combat/sword_slash.ogg',
-    SfxCue.fireCast => 'sfx/magic/fire_cast.ogg',
-    SfxCue.heal => 'sfx/magic/heal.ogg',
-    SfxCue.lightning => 'sfx/magic/lightning.ogg',
-    SfxCue.shield => 'sfx/magic/shield.ogg',
-    SfxCue.victory => 'sfx/result/victory.ogg',
-    SfxCue.defeat => 'sfx/result/defeat.ogg',
+    SfxCue.buttonClick => 'sfx/ui/button_click.mp3',
+    SfxCue.panelOpen => 'sfx/ui/panel_open.mp3',
+    SfxCue.tileSwap => 'sfx/match3/tile_swap.mp3',
+    SfxCue.match3 => 'sfx/match3/match_3.mp3',
+    SfxCue.combo2 => 'sfx/match3/combo_2.mp3',
+    SfxCue.combo3 => 'sfx/match3/combo_3.mp3',
+    SfxCue.combo4 => 'sfx/match3/combo_4.mp3',
+    SfxCue.comboMax => 'sfx/match3/combo_max.mp3',
+    SfxCue.arrowShot => 'sfx/combat/arrow_shot.mp3',
+    SfxCue.criticalHit => 'sfx/combat/critical_hit.mp3',
+    SfxCue.enemyHit => 'sfx/combat/enemy_hit.mp3',
+    SfxCue.spearHit => 'sfx/combat/spear_hit.mp3',
+    SfxCue.swordSlash => 'sfx/combat/sword_slash.mp3',
+    SfxCue.fireCast => 'sfx/magic/fire_cast.mp3',
+    SfxCue.heal => 'sfx/magic/heal.mp3',
+    SfxCue.lightning => 'sfx/magic/lightning.mp3',
+    SfxCue.shield => 'sfx/magic/shield.mp3',
+    SfxCue.victory => 'sfx/result/victory.mp3',
+    SfxCue.defeat => 'sfx/result/defeat.mp3',
   };
 
   /// Full bundle asset path.

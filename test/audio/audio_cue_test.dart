@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Audio Cue & Asset Integrity Tests', () {
-    test('1. Every BgmTrack resolves to an existing .ogg file in assets/audio', () {
+    test('1. Every BgmTrack resolves to an existing .mp3 file in assets/audio', () {
       for (final track in BgmTrack.values) {
         final filePath = track.assetPath;
         final file = File(filePath);
@@ -14,14 +14,14 @@ void main() {
           reason: 'BgmTrack.${track.name} points to non-existent file: $filePath',
         );
         expect(
-          filePath.endsWith('.ogg'),
+          filePath.endsWith('.mp3'),
           isTrue,
-          reason: 'BgmTrack.${track.name} must use .ogg format',
+          reason: 'BgmTrack.${track.name} must use .mp3 format',
         );
       }
     });
 
-    test('1. Every SfxCue resolves to an existing .ogg file in assets/audio', () {
+    test('1. Every SfxCue resolves to an existing .mp3 file in assets/audio', () {
       for (final cue in SfxCue.values) {
         final filePath = cue.assetPath;
         final file = File(filePath);
@@ -31,9 +31,9 @@ void main() {
           reason: 'SfxCue.${cue.name} points to non-existent file: $filePath',
         );
         expect(
-          filePath.endsWith('.ogg'),
+          filePath.endsWith('.mp3'),
           isTrue,
-          reason: 'SfxCue.${cue.name} must use .ogg format',
+          reason: 'SfxCue.${cue.name} must use .mp3 format',
         );
       }
     });
